@@ -12,7 +12,6 @@ class UdpClient:
     def connection_made(self, transport):
         self.transport = transport
         self.transport.sendto(self.message.Binary.full)
-        print(b"Sent: " + self.message.Binary.full)
 
     def datagram_received(self, data, addr):
         task = asyncio.Task(self.to_async(data))

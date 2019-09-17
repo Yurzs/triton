@@ -53,7 +53,7 @@ class Message:
             message.authority.append(await Answer.parse_bytes(message))
         for _ in range(message.header._arcount):
             message.additional.append(await Answer.parse_bytes(message))
-        # print(message.additional.storage[0].__dict__)
+        message.domains.purge()
         return message
 
     async def add_dict(self, data: dict) -> None:

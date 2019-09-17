@@ -18,7 +18,6 @@ class A:
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
-        print(answer.message.stream.peek('bin'))
         instance.address = IPv4Address(answer.message.stream.read(f'uint:{read_len * 8}'))
         return instance
 
