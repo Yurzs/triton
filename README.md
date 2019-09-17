@@ -15,7 +15,8 @@ Triton is a simple DNS client made for better understanding of DNS protocol
 ## How to use
 
 Here is an example query for A record of this gitlab instance
-```import asyncio
+```
+import asyncio
 import triton
 reply_message = asyncio.run(triton.query('8.8.8.8', 'git.best-service.online', 1))
 print(reply_message.__dict__)
@@ -45,7 +46,7 @@ print(reply_message.__dict__)
     'class': 1,
     'ttl': 999,
     'rdata': {
-      'address': 5}
+      'address': 1356055586} # This is int repr of IP address
     }
  ],
 'authority': [],

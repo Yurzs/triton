@@ -43,11 +43,7 @@ class Answer:
         answer._cls = message.stream.read('uint:16')
         answer._ttl = message.stream.read('uint:32')
         answer._rdlength = message.stream.read('uint:16')
-        try:
-            answer._rdata = await rdata_cls[int(answer._type)].parse_bytes(answer, answer._rdlength)
-        except KeyError:
-            answer._rdata = type('Null', (), {})()
-            print(f'Unknown type {int(answer._type)}')
+        answer._rdata = await rdata_cls[int(answer._type)].parse_bytes(answer, answer._rdlength)
         message.domains.purge()
         return answer
 

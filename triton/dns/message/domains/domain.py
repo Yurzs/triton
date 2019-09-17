@@ -1,3 +1,4 @@
+import bitstring
 
 class Domain:
     def __init__(self, label, pos):
@@ -27,7 +28,10 @@ class Domain:
                 if not message.stream.peek('uint:8'):
                     break
         _domain = None
-        message.stream.read('bin:8')  # last 00000000 of length octet
+        try:
+            message.stream.read('bin:8')  # last 00000000 of length octet
+        except bitstring.ReadError:
+            pass
         for n, (label, pos) in enumerate(domain):
             _ = Domain('.'.join([x for m, (x, y) in enumerate(domain) if m >= n]), int(pos / 8))
             message.domains.append(_)
