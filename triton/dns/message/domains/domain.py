@@ -9,7 +9,7 @@ class Domain:
     def decode(cls, message):
         domain = []
         if message.stream.peek('bin:8')[0:2] == '11':
-            found_in_storage = message.domains.find(int(message.stream.read('bin:16')[2:], 2))
+            found_in_storage = message.domains.find_pos(int(message.stream.read('bin:16')[2:], 2))
             if found_in_storage:
                 return found_in_storage
         else:
@@ -20,7 +20,7 @@ class Domain:
                     subdomain += chr(message.stream.read('int:8'))
                 domain.append((subdomain, position))
                 if message.stream.peek('bin:8')[0:2] == '11':
-                    found_in_storage = message.domains.search(int(message.stream.read('bin:16')[2:], 2))
+                    found_in_storage = message.domains.find_pos(int(message.stream.read('bin:16')[2:], 2))
                     if found_in_storage:
                         domain.append((found_in_storage.label, message.stream.pos - 16))
                     break

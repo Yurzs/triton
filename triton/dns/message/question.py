@@ -30,7 +30,7 @@ class Question:
     @classmethod
     async def parse_dict(cls, message, dct):
         question = cls(message)
-        question.qname = dct.get('qname')
+        question.qname = Domain(dct.get('qname'), None)
         question.qtype = dct.get('qtype')
         question.qclass = dct.get('qclass')
         return question

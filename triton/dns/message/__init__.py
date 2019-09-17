@@ -4,7 +4,7 @@ from .header import Header
 from bitstring import ConstBitStream, BitArray
 from .domains.storage import DomainStorage
 import json
-
+import random
 
 class Message:
     class _Binary:
@@ -77,10 +77,10 @@ class Message:
     async def parse_dict(cls, data):
         message = cls()
         message.header = await Header.parse_dict(message, data['header'])
-        message.questions = await QuestionStorage.parse_dict(message, data['questions'])
-        message.answers = await AnswerStorage.parse_dict(message, data['answers'])
-        message.authority = await AnswerStorage.parse_dict(message, data['authorities'])
-        message.additional = await AnswerStorage.parse_dict(message, data['additionals'])
+        message.question = await QuestionStorage.parse_dict(message, data['question'])
+        message.answer = await AnswerStorage.parse_dict(message, data['answer'])
+        message.authority = await AnswerStorage.parse_dict(message, data['authority'])
+        message.additional = await AnswerStorage.parse_dict(message, data['additional'])
         return message
 
     @property
@@ -93,5 +93,38 @@ class Message:
                 }
 
     def to_json(self):
-        print(str(self.__dict__).replace("'", '"'))
         return json.dumps(json.loads(str(self.__dict__).replace("'", '"')))
+
+
+    @classmethod
+    async def create_question(cls, name, qtype=1, qclass=1):
+        m = await Message.parse_dict(
+            {
+                'header': {
+                    'id': random.randrange(1, 65535),
+                    'qr': 0,
+                    'opcode': 0,
+                    'aa': 0,
+                    'tc': 0,
+                    'rd': 1,
+                    'ra': 0,
+                    'z': 0,
+                    'rcode': 0,
+                    'qdcount': 1,
+                    'ancount': 0,
+                    'nscount': 0,
+                    'arcount': 0
+                },
+                'question': [
+                    {
+                        'qname': name,
+                        'qtype': qtype,
+                        'qclass': qclass
+                    }
+                ],
+                'answer': [],
+                'authority': [],
+                'additional': []
+            }
+        )
+        return m

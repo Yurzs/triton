@@ -15,5 +15,11 @@ class DomainStorage:
                 return x
         return None
 
+    def find_pos(self, pos):
+        for x in self.storage:
+            if x.pos == pos:
+                return x
+        return None
+
     def purge(self):
         self.storage = []

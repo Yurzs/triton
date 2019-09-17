@@ -1,5 +1,5 @@
 from .domains.domain import Domain
-from .rdata import rdata_cls
+from .rdata import rdata_cls, base
 
 
 class Answer:
@@ -43,7 +43,11 @@ class Answer:
         answer._cls = message.stream.read('uint:16')
         answer._ttl = message.stream.read('uint:32')
         answer._rdlength = message.stream.read('uint:16')
-        answer._rdata = await rdata_cls[int(answer._type)].parse_bytes(answer, answer._rdlength)
+        try:
+            answer._rdata = await rdata_cls[int(answer._type)].parse_bytes(answer, answer._rdlength)
+        except KeyError:
+            answer._rdata = type('Null', (), {})()
+            print(f'Unknown type {int(answer._type)}')
         message.domains.purge()
         return answer
 
@@ -76,6 +80,7 @@ class Answer:
          'class': self._cls,
          'ttl': self._ttl,
          'rdata': self._rdata.__dict__}
+
 
 class AnswerStorage:
     class _Binary:
