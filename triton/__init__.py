@@ -1,6 +1,5 @@
 from . import dns
 from . import protocol
-import asyncio
 
 
 async def query(dns_server, domain, record_type):

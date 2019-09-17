@@ -9,8 +9,8 @@ Triton is a simple DNS client made for better understanding of DNS protocol
 ## From this repo
 
 `git clone https://git.best-service.online/yurzs/triton`  
-`cd triron`  
-`python3 setup.py` 
+`cd triton`  
+`python3 setup.py install` 
 
 ## How to use
 
