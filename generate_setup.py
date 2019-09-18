@@ -1,6 +1,6 @@
 import datetime
 import os
-version = datetime.datetime.now(tz=datetime.timezone.utc).strftime('%Y.%m.%d.%H%M') + os.environ.get('CI_COMMIT_SHORT_SHA')
+version = datetime.datetime.now(tz=datetime.timezone.utc).strftime('%Y.%m.%d.%H%M')
 
 try:
     with open('README.md', 'r', encoding='utf-8') as f:

@@ -32,7 +32,7 @@ class SOA:
         instance.refresh = answer.message.stream.read('uint:32')
         instance.retry = answer.message.stream.read('uint:32')
         instance.expire = answer.message.stream.read('uint:32')
-        instance.minimun = answer.message.stream.read('uint:32')
+        instance.minimum = answer.message.stream.read('uint:32')
         return instance
 
     @classmethod
