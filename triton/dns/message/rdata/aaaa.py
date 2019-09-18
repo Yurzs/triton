@@ -8,7 +8,7 @@ class AAAA:
 
         @property
         def full(self):
-            return bin(int(self.a.address))[2:].zfill(8*4*4)
+            return bin(int(self.a.address))[2:].zfill(8 * 4 * 4)
 
     id = 28
 
@@ -19,7 +19,7 @@ class AAAA:
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
-        instance.address = IPv6Address(answer.message.stream.read(f'uint:{read_len}'))
+        instance.address = IPv6Address(answer.message.stream.read(f'uint:{read_len * 8}'))
         return instance
 
     @classmethod

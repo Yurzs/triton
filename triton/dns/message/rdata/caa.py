@@ -13,7 +13,8 @@ class CAA:
             result += ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.caa.tag]])
             result += ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.caa.value]])
             return result
-    id = 1
+
+    id = 257
 
     def __init__(self, answer):
         self.answer = answer
@@ -23,7 +24,12 @@ class CAA:
     async def parse_bytes(cls, answer, read_len):
         # TODO: bytes parser
         instance = cls(answer)
-        instance.address = IPv4Address(answer.message.stream.read(f'uint:{read_len}'))
+        instance.critical = bool(answer.message.stream.read(f'uint:8'))
+        instance.tag_length = answer.message.stream.read(f'uint:8')
+        str_tag = answer.message.stream.read(f'bin:{instance.tag_length*8}')
+        instance.tag = ''.join([chr(int(x, base=2)) for x in [str_tag[i:i + 8] for i in range(0, len(str_tag), 8)]])
+        str_value = answer.message.stream.read(f'bin:{(read_len - instance.tag_length - 2) * 8}')
+        instance.value = ''.join([chr(int(x, base=2)) for x in [str_value[i:i + 8] for i in range(0, len(str_value), 8)]])
         return instance
 
     @classmethod

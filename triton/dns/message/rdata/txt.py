@@ -19,8 +19,8 @@ class TXT:
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
-        str = answer.message.stream.read(f'bin:{read_len}')
-        instance.txt_data = ''.join([chr(int(x, base=2)) for x in [str[i:i + 8] for i in range(0, len(str), 8)]])
+        str = answer.message.stream.read(f'bin:{read_len*8}')
+        instance.txt_data = ''.join([chr(int(x, base=2)) for x in [str[i:i + 8] for i in range(0, len(str), 8)]][1:])
         return instance
 
     @classmethod

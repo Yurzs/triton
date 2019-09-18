@@ -81,6 +81,7 @@ class Message:
         message.answer = await AnswerStorage.parse_dict(message, data['answer'])
         message.authority = await AnswerStorage.parse_dict(message, data['authority'])
         message.additional = await AnswerStorage.parse_dict(message, data['additional'])
+        message.domains.purge()
         return message
 
     @property

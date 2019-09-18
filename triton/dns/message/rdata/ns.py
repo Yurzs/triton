@@ -20,7 +20,10 @@ class NS:
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
+        print(f'Before {len(answer.message.stream.peek("bin"))}')
         instance.nsdname = Domain.decode(answer.message)
+        print(instance.nsdname)
+        print(f'After {len(answer.message.stream.peek("bin"))}')
         return instance
 
     @classmethod

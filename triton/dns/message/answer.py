@@ -54,8 +54,6 @@ class Answer:
         answer._cls = data.get('class')
         answer._ttl = data.get('ttl')
         answer._rdata = await rdata_cls[int(answer._type)].parse_dict(answer, data.get('rdata'))
-        if message:
-            message.domains.purge()
         return answer
 
     @property
@@ -75,6 +73,7 @@ class Answer:
          'class': self._cls,
          'ttl': self._ttl,
          'rdata': self._rdata.__dict__}
+
 
 
 class AnswerStorage:

@@ -12,7 +12,7 @@ class MX:
             result += Domain.sub_encode(self.mx.exchange.label)
             return result
 
-    id = 28
+    id = 15
 
     def __init__(self, answer):
         self.answer = answer
@@ -21,8 +21,11 @@ class MX:
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
-        instance.preference = answer.message.stream.read(f'uint:{2}')
+        instance.preference = answer.message.stream.read(f'uint:{2*8}')
+        print(f'Before {len(answer.message.stream.peek("bin"))}')
         instance.exchange = Domain.decode(answer.message)
+        print(instance.exchange)
+        print(f'After {len(answer.message.stream.peek("bin"))}')
         return instance
 
     @classmethod

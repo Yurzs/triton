@@ -1,5 +1,6 @@
 import bitstring
 
+
 class Domain:
     def __init__(self, label, pos):
         self.injected = False
@@ -9,6 +10,7 @@ class Domain:
     @classmethod
     def decode(cls, message):
         domain = []
+        cut_last_octet = True
         if message.stream.peek('bin:8')[0:2] == '11':
             found_in_storage = message.domains.find_pos(int(message.stream.read('bin:16')[2:], 2))
             if found_in_storage:
@@ -17,19 +19,21 @@ class Domain:
             while message.stream.peek('int:8'):
                 subdomain = ''
                 position = message.stream.pos
-                for c in range(message.stream.read('int:8')):
-                    subdomain += chr(message.stream.read('int:8'))
+                for c in range(message.stream.read('uint:8')):
+                    subdomain += chr(message.stream.read('uint:8'))
                 domain.append((subdomain, position))
                 if message.stream.peek('bin:8')[0:2] == '11':
                     found_in_storage = message.domains.find_pos(int(message.stream.read('bin:16')[2:], 2))
                     if found_in_storage:
                         domain.append((found_in_storage.label, message.stream.pos - 16))
+                        cut_last_octet = False
                     break
                 if not message.stream.peek('uint:8'):
                     break
         _domain = None
         try:
-            message.stream.read('bin:8')  # last 00000000 of length octet
+            if cut_last_octet:
+                message.stream.read('bin:8')  # last 00000000 of length octet
         except bitstring.ReadError:
             pass
         for n, (label, pos) in enumerate(domain):
