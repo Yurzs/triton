@@ -11,9 +11,14 @@ class OPT(ResourceRecord):
     id = 41
     repr = ['storage']
 
+    def __init__(self, *args, **kwargs):
+        super(OPT, self).__init__(*args, **kwargs)
+        self.storage = OptionStorage()
+
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
+
         while read_len > 0:
             option_code = answer.message.stream.read(f'uint:2')
             option_length = answer.message.stream.read(f'uint:2')
@@ -29,6 +34,9 @@ class OPT(ResourceRecord):
             instance.storage.append(Option(**opt))
         return instance
 
+    @property
+    def __dict__(self):
+        return {'storage': self.storage.__dict__}
 
 class Option:
     class _Binary:
@@ -69,3 +77,10 @@ class OptionStorage:
 
     def append(self, option):
         self.storage.append(option)
+
+    def __repr__(self):
+        return str({x.code: x.data for x in self.storage})
+
+    @property
+    def __dict__(self):
+        return {x.code: x.data for x in self.storage}

@@ -59,12 +59,15 @@ print(reply_message.__dict__)
 - [ ] Enable EDNS
 - [ ] Add DNSSEC Resource Record types
 
-## List of avalable resource record types
+## List of available resource record types
 - [x] A
 - [x] AAAA
 - [X] NS
 - [x] TXT
 - [x] SOA
 - [x] OPT
+- [x] RRSIG
+- [x] DNSKEY
+- [x] DS
 
 

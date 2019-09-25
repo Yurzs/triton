@@ -1,5 +1,5 @@
 from .domains.domain import Domain
-from .rdata import rdata_cls, base
+from .rdata import rdata_cls
 
 
 class Answer:
@@ -29,7 +29,6 @@ class Answer:
             if self.answer.message:
                 self.answer.message.offset += int(len(result) / 8)
             return result
-
 
     def __init__(self, message):
         self.message = message
@@ -88,18 +87,19 @@ class Answer:
     #             'rdata': self._rdata.__dict__}
 
     def __mydict__(self):
-        return {'name': self._name.__dict__,
-         'type': self._type,
-         'class': self._cls,
-         'ttl': self._ttl,
-         'rdata': self._rdata.__dict__}
+        return {'name': self._name.label if self._name else '',
+                'type': self._type,
+                'class': self._cls,
+                'ttl': self._ttl,
+                'rdata': self._rdata.__dict__}
 
     def __repr__(self):
-        return str({'name': self._name.label,
-         'type': self._type,
-         'class': self._cls,
-         'ttl': self._ttl,
-         'rdata': self._rdata})
+        return str({'name': self._name.label if self._name else '',
+                    'type': self._type,
+                    'class': self._cls,
+                    'ttl': self._ttl,
+                    'rdata': self._rdata})
+
 
 class AnswerStorage:
     class _Binary:
@@ -153,4 +153,4 @@ class AnswerStorage:
         self.storage.pop(key)
 
     def __repr__(self):
-        return '\n'.join([a.__repr__() for a in self.storage])
+        return '['+','.join([a.__repr__() for a in self.storage])+']'

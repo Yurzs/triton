@@ -23,8 +23,9 @@ class DS(ResourceRecord):
         instance.key_tag = answer.message.stream.read(f'uint:16')
         instance.protocol = answer.message.stream.read(f'uint:8')
         instance.algorithm = answer.message.stream.read(f'uint:8')
-        str_ = answer.message.stream.read(f'bin:{read_len*8 - 4*8}')
-        instance.public_key = ''.join([chr(int(x, base=2)) for x in [str_[i:i + 8] for i in range(0, len(str_), 8)]])
+        # str_ = answer.message.stream.read(f'bin:{read_len*8 - 32}')
+        # instance.public_key = ''.join([chr(int(x, base=2)) for x in [str_[i:i + 8] for i in range(0, len(str_), 8)]])
+        instance.public_key = answer.message.stream.read(f'bytes:{read_len*8 - 32}')
         return instance
 
     @classmethod

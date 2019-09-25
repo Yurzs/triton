@@ -53,6 +53,11 @@ class Question:
     def cls(self):
         return self.qclass
 
+    def __repr__(self):
+        return str({'name': self.name,
+                    'type': self.type,
+                    'class': self.cls})
+
 
 class QuestionStorage:
     class _Binary:
@@ -101,3 +106,6 @@ class QuestionStorage:
 
     def __delitem__(self, key):
         self.storage.pop(key)
+
+    def __repr__(self):
+        return '['+','.join([a.__repr__() for a in self.storage])+']'

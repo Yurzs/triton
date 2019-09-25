@@ -6,6 +6,7 @@ from .domains.storage import DomainStorage
 import json
 import random
 
+
 class Message:
     class _Binary:
         def __init__(self, message):
@@ -93,12 +94,19 @@ class Message:
                 'additional': [x.__mydict__() for x in self.additional]
                 }
 
+    def __repr__(self):
+        return str({'header': self.header,
+         'question': self.question,
+         'answer': self.answer,
+         'authority': self.authority,
+         'additional': self.additional})
+
     def to_json(self):
-        return json.dumps(json.loads(str(self.__dict__).replace("'", '"')), indent=4)
+        return json.dumps(json.loads(str(self.__repr__()).replace("'", '"')), indent=4)
 
 
     @classmethod
-    async def create_question(cls, name, qtype=1, qclass=1):
+    async def create_question(cls, name, qtype=1, qclass=1, dnssec=False):
         m = await Message.parse_dict(
             {
                 'header': {
@@ -125,7 +133,17 @@ class Message:
                 ],
                 'answer': [],
                 'authority': [],
-                'additional': []
+                'additional': [] if not dnssec else [
+                    {
+                        'name': '',
+                        'type': 41,
+                        'class': 16000,
+                        'ttl': int('00000000000000001000000000000000', base=2),
+                        'rdata': {
+                            'options': []
+                        }
+                     }
+                ]
             }
         )
         return m

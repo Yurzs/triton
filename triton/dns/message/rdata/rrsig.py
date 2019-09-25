@@ -1,5 +1,6 @@
 from .base import ResourceRecord
 from triton.dns.message.domains.domain import Domain
+import base64
 
 
 class RRSIG(ResourceRecord):
@@ -72,8 +73,13 @@ class RRSIG(ResourceRecord):
         instance.key_tag = answer.message.stream.read(f'uint:16')
         instance.signers_name = Domain.decode(answer.message)
         end = answer.message.stream.pos
-        instance.signature = answer.message.stream.read(f'uint:{read_len*8 - (end - start)}')
+        instance._signature = answer.message.stream.read(f'bytes:{int(read_len - (end - start)/8)}')
         return instance
+
+
+    @property
+    def signature(self):
+        return base64.b64encode(self._signature).decode()
 
     @classmethod
     async def parse_dict(cls, answer, data):
@@ -86,7 +92,7 @@ class RRSIG(ResourceRecord):
         instance.signature_inception = data.get('signature_inception')
         instance.key_tag = data.get('key_tag')
         instance.signers_name = data.get('signers_name')
-        instance.signature = data.get('signature')
+        instance._signature = data.get('signature')
         return instance
 
     @property
