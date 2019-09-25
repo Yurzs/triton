@@ -1,7 +1,8 @@
-from ipaddress import IPv4Address
+from .base import ResourceRecord
+from triton.dns.message.domains.domain import Domain
 
 
-class RRSIG:
+class RRSIG(ResourceRecord):
     type_covered: int
     algorithm: int
     labels: int
@@ -12,53 +13,66 @@ class RRSIG:
     signers_name: str
     signature: bytes
 
-    class _Binary:
-        def __init__(self, rrsig: 'RRSIG'):
-            self.rrsig = rrsig
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            result = format(self.rrsig.type_covered, 'b').zfill(16)
-            result += format(self.rrsig.algorithm, 'b').zfill(8)
-            result += format(self.rrsig.labels, 'b').zfill(8)
-            result += format(self.rrsig.original_ttl, 'b').zfill(32)
-            result += format(self.rrsig.signature_expiration, 'b').zfill(32)
-            result += format(self.rrsig.signature_inception, 'b').zfill(32)
-            result += format(self.rrsig.key_tag, 'b').zfill(16)
-            for prt in self.rrsig.signers_name.split('.'):
+            result = format(self.resource_record.type_covered, 'b').zfill(16)
+            result += format(self.resource_record.algorithm, 'b').zfill(8)
+            result += format(self.resource_record.labels, 'b').zfill(8)
+            result += format(self.resource_record.original_ttl, 'b').zfill(32)
+            result += format(self.resource_record.signature_expiration, 'b').zfill(32)
+            result += format(self.resource_record.signature_inception, 'b').zfill(32)
+            result += format(self.resource_record.key_tag, 'b').zfill(16)
+            for prt in self.resource_record.signers_name.split('.'):
                 sig_name = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in prt]])
                 result += f'{bin(int(len(sig_name) / 8))[2:].zfill(8)}{sig_name}'
             else:
                 result += str().zfill(8)
-            result += self.rrsig.signature
+            result += self.resource_record.signature
             return result
 
         @property
         def without_signature(self):
-            result = format(self.rrsig.type_covered, 'b').zfill(16)
-            result += format(self.rrsig.algorithm, 'b').zfill(8)
-            result += format(self.rrsig.labels, 'b').zfill(8)
-            result += format(self.rrsig.original_ttl, 'b').zfill(32)
-            result += format(self.rrsig.signature_expiration, 'b').zfill(32)
-            result += format(self.rrsig.signature_inception, 'b').zfill(32)
-            result += format(self.rrsig.key_tag, 'b').zfill(16)
-            for prt in self.rrsig.signers_name.split('.'):
+            result = format(self.resource_record.type_covered, 'b').zfill(16)
+            result += format(self.resource_record.algorithm, 'b').zfill(8)
+            result += format(self.resource_record.labels, 'b').zfill(8)
+            result += format(self.resource_record.original_ttl, 'b').zfill(32)
+            result += format(self.resource_record.signature_expiration, 'b').zfill(32)
+            result += format(self.resource_record.signature_inception, 'b').zfill(32)
+            result += format(self.resource_record.key_tag, 'b').zfill(16)
+            for prt in self.resource_record.signers_name.split('.'):
                 sig_name = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in prt]])
                 result += f'{bin(int(len(sig_name) / 8))[2:].zfill(8)}{sig_name}'
             else:
                 result += str().zfill(8)
             return result
 
-    id = 1
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    id = 46
+    repr = ['type_covered',
+            'algorithm',
+            'labels',
+            'original_ttl',
+            'signature_expiration',
+            'signature_inception',
+            'key_tag',
+            'signers_name',
+            'signature']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
-        instance.address = IPv4Address(answer.message.stream.read(f'uint:{read_len}'))
+        start = answer.message.stream.pos
+        instance.type_covered = answer.message.stream.read(f'uint:16')
+        instance.algorithm = answer.message.stream.read(f'uint:8')
+        instance.labels = answer.message.stream.read(f'uint:8')
+        instance.original_ttl = answer.message.stream.read(f'uint:32')
+        instance.signature_expiration = answer.message.stream.read(f'uint:32')
+        instance.signature_inception = answer.message.stream.read(f'uint:32')
+        instance.key_tag = answer.message.stream.read(f'uint:16')
+        instance.signers_name = Domain.decode(answer.message)
+        end = answer.message.stream.pos
+        instance.signature = answer.message.stream.read(f'uint:{read_len*8 - (end - start)}')
         return instance
 
     @classmethod

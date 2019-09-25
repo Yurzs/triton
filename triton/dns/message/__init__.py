@@ -94,7 +94,7 @@ class Message:
                 }
 
     def to_json(self):
-        return json.dumps(json.loads(str(self.__dict__).replace("'", '"')))
+        return json.dumps(json.loads(str(self.__dict__).replace("'", '"')), indent=4)
 
 
     @classmethod
@@ -129,3 +129,4 @@ class Message:
             }
         )
         return m
+

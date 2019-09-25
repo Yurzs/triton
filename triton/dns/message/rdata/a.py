@@ -1,19 +1,16 @@
 from ipaddress import IPv4Address
+from .base import ResourceRecord
 
 
-class A:
-    class _Binary:
-        def __init__(self, a: 'A'):
-            self.a = a
+class A(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            return bin(int(self.a.address))[2:].zfill(8*4)
-    id = 1
+            return bin(int(self.resource_record.address))[2:].zfill(8*4)
 
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    id = 1
+    repr = ['address']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):
@@ -29,6 +26,7 @@ class A:
         except AttributeError:
             instance.address = IPv4Address(data[0])
         return instance
+
 
     @property
     def __dict__(self):

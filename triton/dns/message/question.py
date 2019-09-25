@@ -41,6 +41,18 @@ class Question:
         dct.pop('message')
         return dct
 
+    @property
+    def name(self):
+        return self.qname
+
+    @property
+    def type(self):
+        return self.qtype
+
+    @property
+    def cls(self):
+        return self.qclass
+
 
 class QuestionStorage:
     class _Binary:
@@ -81,3 +93,11 @@ class QuestionStorage:
     def __iter__(self):
         return (x for x in self.storage)
 
+    def __getitem__(self, item):
+        return self.storage[item]
+
+    def __setitem__(self, key, value):
+        self.storage[key] = value
+
+    def __delitem__(self, key):
+        self.storage.pop(key)

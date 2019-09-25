@@ -1,24 +1,21 @@
+from .base import ResourceRecord
 
-class KEY:
-    class _Binary:
-        def __init__(self, key: 'KEY'):
-            self.key = key
+
+class KEY(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            result = bin(self.key.flags)[2:].zfill(16)
-            result += bin(self.key.protocol)[2:].zfill(8)
-            result += bin(self.key.algorithm)[2:].zfill(8)
-            row = self.key.public_key.decode()
+            result = bin(self.resource_record.flags)[2:].zfill(16)
+            result += bin(self.resource_record.protocol)[2:].zfill(8)
+            result += bin(self.resource_record.algorithm)[2:].zfill(8)
+            row = self.resource_record.public_key.decode()
             res = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in row]])
             result += res
             return result
 
-    id = 1
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    id = 25
+    repr = ['flags', 'protocol', 'algorithm', 'public_key']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):

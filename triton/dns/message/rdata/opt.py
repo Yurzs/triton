@@ -1,19 +1,15 @@
+from .base import ResourceRecord
 
-class OPT:
-    class _Binary:
-        def __init__(self, opt):
-            self.opt = opt
+
+class OPT(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            return self.opt.storage.Binary.full
+            return self.resource_record.storage.Binary.full
 
     id = 41
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
-        self.storage = OptionStorage()
+    repr = ['storage']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):

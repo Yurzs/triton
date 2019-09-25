@@ -1,27 +1,23 @@
 from ..domains.domain import Domain
+from .base import ResourceRecord
 
 
-class SOA:
-    class _Binary:
-        def __init__(self, soa: 'SOA'):
-            self.soa = soa
+class SOA(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            result = Domain.sub_encode(self.soa.mname.label)
-            result += Domain.sub_encode(self.soa.rname.label)
-            result += bin(int(self.soa.serial))[2:].zfill(32)
-            result += bin(int(self.soa.refresh))[2:].zfill(32)
-            result += bin(self.soa.retry)[2:].zfill(32)
-            result += bin(self.soa.expire)[2:].zfill(32)
-            result += bin(self.soa.minimum)[2:].zfill(32)
+            result = Domain.sub_encode(self.resource_record.mname.label)
+            result += Domain.sub_encode(self.resource_record.rname.label)
+            result += bin(int(self.resource_record.serial))[2:].zfill(32)
+            result += bin(int(self.resource_record.refresh))[2:].zfill(32)
+            result += bin(self.resource_record.retry)[2:].zfill(32)
+            result += bin(self.resource_record.expire)[2:].zfill(32)
+            result += bin(self.resource_record.minimum)[2:].zfill(32)
             return result
 
     id = 6
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    repr = ['mname', 'rname', 'serial', 'refresh', 'retry', 'expire', 'minimum']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):

@@ -1,20 +1,16 @@
 from ipaddress import IPv6Address
+from .base import ResourceRecord
 
 
-class AAAA:
-    class _Binary:
-        def __init__(self, a: 'A'):
-            self.a = a
+class AAAA(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            return bin(int(self.a.address))[2:].zfill(8 * 4 * 4)
+            return bin(int(self.resource_record.address))[2:].zfill(8 * 4 * 4)
 
     id = 28
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    repr = ['address']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):

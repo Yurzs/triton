@@ -1,29 +1,22 @@
 from ipaddress import IPv4Address
 from ..domains.domain import Domain
+from .base import ResourceRecord
 
 
-class NS:
-    class _Binary:
-        def __init__(self, ns: 'NS'):
-            self.ns = ns
+class NS(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            return Domain.sub_encode(self.ns.nsdname.label)
+            return Domain.sub_encode(self.resource_record.nsdname.label)
 
     id = 2
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    repr = ['nsdname']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
-        print(f'Before {len(answer.message.stream.peek("bin"))}')
         instance.nsdname = Domain.decode(answer.message)
-        print(instance.nsdname)
-        print(f'After {len(answer.message.stream.peek("bin"))}')
         return instance
 
     @classmethod

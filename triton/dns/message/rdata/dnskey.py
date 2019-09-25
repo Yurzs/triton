@@ -1,32 +1,26 @@
-from bitstring import BitArray
 from typing import Union
 
+from bitstring import BitArray
 
-class DNSKEY:
-    flags: int
-    algorithm: int
-    protocol : int
-    public_key : Union[str, bytes]
+from .base import ResourceRecord
 
-    class _Binary:
-        def __init__(self, dnskey: 'DNSKEY'):
-            self.dnskey = dnskey
+
+class DNSKEY(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            result = bin(self.dnskey.flags)[2:].zfill(16)
-            result += bin(self.dnskey.protocol)[2:].zfill(8)
-            result += bin(self.dnskey.algorithm)[2:].zfill(8)
-            row = self.dnskey.public_key.decode() if isinstance(self.dnskey.public_key, bytes) else self.dnskey.public_key
+            result = bin(self.resource_record.flags)[2:].zfill(16)
+            result += bin(self.resource_record.protocol)[2:].zfill(8)
+            result += bin(self.resource_record.algorithm)[2:].zfill(8)
+            row = self.resource_record.public_key.decode() if isinstance(self.resource_record.public_key,
+                                                                         bytes) else self.dnskey.public_key
             res = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in row]])
             result += res
             return result
 
-    id = 1
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    id = 48
+    repr = ['flags', 'protocol', 'algorithm', 'public_key']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):
@@ -62,5 +56,5 @@ class DNSKEY:
             ac = 0
             for i, k in enumerate(BitArray(bin=self.Binary.full).bytes):
                 ac += k if i & 1 else k << 8
-            ac += (ac>>16) & 0xFFFF
+            ac += (ac >> 16) & 0xFFFF
             return ac & 0xFFFF

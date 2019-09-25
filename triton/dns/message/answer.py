@@ -60,6 +60,26 @@ class Answer:
     def rdlength(self):
         return int(len(self._rdata.Binary.full) / 8)
 
+    @property
+    def name(self):
+        return self._name.label
+
+    @property
+    def type(self):
+        return self._type
+
+    @property
+    def cls(self):
+        return self.cls
+
+    @property
+    def ttl(self):
+        return self._ttl
+
+    @property
+    def rdata(self):
+        return self._rdata
+
     # def __dct__(self):
     #     return {'name': self._name.label,
     #             'type': self._type,
@@ -74,7 +94,12 @@ class Answer:
          'ttl': self._ttl,
          'rdata': self._rdata.__dict__}
 
-
+    def __repr__(self):
+        return str({'name': self._name.label,
+         'type': self._type,
+         'class': self._cls,
+         'ttl': self._ttl,
+         'rdata': self._rdata})
 
 class AnswerStorage:
     class _Binary:
@@ -117,3 +142,15 @@ class AnswerStorage:
 
     def __mydict__(self):
         return [x.__mydict__ for x in self.storage]
+
+    def __getitem__(self, item):
+        return self.storage[item]
+
+    def __setitem__(self, key, value):
+        self.storage[key] = value
+
+    def __delitem__(self, key):
+        self.storage.pop(key)
+
+    def __repr__(self):
+        return '\n'.join([a.__repr__() for a in self.storage])

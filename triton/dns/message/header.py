@@ -96,3 +96,7 @@ class Header:
          'ancount': self.ancount,
          'nscount': self.nscount,
          'arcount': self.arcount}
+
+
+    def __repr__(self):
+        return str(self.__mydict__())

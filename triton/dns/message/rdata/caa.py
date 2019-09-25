@@ -1,24 +1,20 @@
 from ipaddress import IPv4Address
+from .base import ResourceRecord
 
 
-class CAA:
-    class _Binary:
-        def __init__(self, caa: 'CAA'):
-            self.caa = caa
+class CAA(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
 
         @property
         def full(self):
-            result = format(self.caa.critical, 'b').zfill(8)
-            result += format(len(self.caa.tag), 'b').zfill(8)
-            result += ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.caa.tag]])
-            result += ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.caa.value]])
+            result = format(self.resource_record.critical, 'b').zfill(8)
+            result += format(len(self.resource_record.tag), 'b').zfill(8)
+            result += ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.resource_record.tag]])
+            result += ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.resource_record.value]])
             return result
 
     id = 257
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    repr = ['critical', 'tag', 'value']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):

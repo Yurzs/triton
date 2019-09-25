@@ -1,20 +1,17 @@
+from .base import ResourceRecord
 
 
-class TXT:
-    class _Binary:
-        def __init__(self, txt: 'TXT'):
-            self.txt = txt
+class TXT(ResourceRecord):
+    class _Binary(ResourceRecord._Binary):
+
 
         @property
         def full(self):
-            res = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.txt.txt_data]])
+            res = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in self.resource_record.txt_data]])
             return f'{bin(int(len(res) / 8))[2:].zfill(8)}{res}'
 
     id = 16
-
-    def __init__(self, answer):
-        self.answer = answer
-        self.Binary = self._Binary(self)
+    repr = ['txt_data']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):
