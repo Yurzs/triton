@@ -1,6 +1,6 @@
 import base64
 from bitstring import BitArray
-
+import triton
 from .base import ResourceRecord
 
 
@@ -19,21 +19,27 @@ class DNSKEY(ResourceRecord):
     repr = ['flags', 'protocol', 'algorithm', 'public_key']
 
     @classmethod
-    async def parse_bytes(cls, answer: 'Answer', read_len: int) -> 'DNSKEY':
+    async def parse_bytes(cls, answer: 'triton.dns.message.answer.Answer', read_len: int) -> 'DNSKEY':
+        assert isinstance(answer, triton.dns.message.answer.Answer)
+        assert isinstance(read_len, int)
         instance = cls(answer)
         instance.flags = answer.message.stream.read(f'uint:16')
         instance.protocol = answer.message.stream.read(f'uint:8')
         instance.algorithm = answer.message.stream.read(f'uint:8')
         instance._public_key = answer.message.stream.read(f'bytes:{read_len - 4}')
+        assert isinstance(instance._public_key, bytes)
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer: 'Answer', data: dict) -> 'DNSKEY':
+    async def parse_dict(cls, answer: 'triton.dns.message.answer.Answer', data: dict) -> 'DNSKEY':
+        assert isinstance(answer, triton.dns.message.answer.Answer)
+        assert isinstance(data, dict)
         instance = cls(answer)
         instance.flags = data.get('flags')
         instance.protocol = 3
         instance.algorithm = data.get('algorithm')
         instance._public_key = data.get('public_key')
+        assert isinstance(instance._public_key, bytes)
         return instance
 
     @property

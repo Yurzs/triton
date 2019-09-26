@@ -1,6 +1,7 @@
 from .base import ResourceRecord
 from triton.dns.message.domains.domain import Domain
 import base64
+from bitstring import BitArray
 
 
 class RRSIG(ResourceRecord):
@@ -30,7 +31,7 @@ class RRSIG(ResourceRecord):
                 result += f'{bin(int(len(sig_name) / 8))[2:].zfill(8)}{sig_name}'
             else:
                 result += str().zfill(8)
-            result += self.resource_record.signature
+            result += BitArray(bytes=self.resource_record._signature).bin
             return result
 
         @property
@@ -106,3 +107,8 @@ class RRSIG(ResourceRecord):
                 'key_tag': int(self.key_tag),
                 'signers_name': str(self.signers_name),
                 'signature': str(self.signature)}
+
+    async def verify(self, message_with_keys):
+        for answer in message_with_keys.answer:
+            if answer.rdata.key_tag == self.key_tag:
+                pass
