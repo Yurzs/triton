@@ -15,6 +15,12 @@ class DNSKEY(ResourceRecord):
             result += BitArray(bytes=self.resource_record._public_key).bin
             return result
 
+    class KSK:
+        pass
+
+    class ZSK:
+        pass
+
     id = 48
     repr = ['flags', 'protocol', 'algorithm', 'public_key']
 
@@ -56,3 +62,11 @@ class DNSKEY(ResourceRecord):
                 ac += k if i & 1 else k << 8
             ac += (ac >> 16) & 0xFFFF
             return ac & 0xFFFF
+
+    @property
+    def key_type(self):
+        if self.flags == 257:
+            return self.KSK
+        if self.flags == 256:
+            return self.ZSK
+

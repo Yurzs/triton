@@ -1,6 +1,7 @@
 from .domains.domain import Domain
 from .rdata import rdata_cls
-
+from bitstring import BitArray
+from triton.dns.message.rdata import ResourceRecord
 
 class Answer:
     class _Binary:
@@ -9,6 +10,7 @@ class Answer:
 
         @property
         def full(self):
+            print('encoding')
             result = self.answer._name.encode(self.answer.message) if self.answer._name else ''
             result += bin(self.answer._type)[2:].zfill(16)
             result += bin(self.answer._cls)[2:].zfill(16)
@@ -29,6 +31,14 @@ class Answer:
             if self.answer.message:
                 self.answer.message.offset += int(len(result) / 8)
             return result
+
+        @property
+        def full_bytes(self):
+            return BitArray(bin=self.full).bytes
+
+        @property
+        def full_canonical_bytes(self):
+            return BitArray(bin=self.full_canonical).bytes
 
     def __init__(self, message):
         self.message = message
@@ -65,7 +75,7 @@ class Answer:
 
     @property
     def type(self):
-        return self._type
+        return ResourceRecord.find_subclass_by_id(self._type).__name__
 
     @property
     def cls(self):
@@ -95,7 +105,7 @@ class Answer:
 
     def __repr__(self):
         return str({'name': self._name.label if self._name else '',
-                    'type': self._type,
+                    'type': self.type,
                     'class': self._cls,
                     'ttl': self._ttl,
                     'rdata': self._rdata})
