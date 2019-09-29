@@ -1,4 +1,5 @@
 from ipaddress import IPv6Address
+
 from .base import ResourceRecord
 
 

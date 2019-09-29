@@ -1,7 +1,9 @@
+from bitstring import BitArray
+
+from triton.dns.message.rdata import ResourceRecord
 from .domains.domain import Domain
 from .rdata import rdata_cls
-from bitstring import BitArray
-from triton.dns.message.rdata import ResourceRecord
+
 
 class Answer:
     class _Binary:
@@ -163,4 +165,4 @@ class AnswerStorage:
         self.storage.pop(key)
 
     def __repr__(self):
-        return '['+','.join([a.__repr__() for a in self.storage])+']'
+        return '[' + ','.join([a.__repr__() for a in self.storage]) + ']'

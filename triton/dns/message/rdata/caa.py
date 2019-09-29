@@ -1,4 +1,3 @@
-from ipaddress import IPv4Address
 from .base import ResourceRecord
 
 
@@ -22,10 +21,11 @@ class CAA(ResourceRecord):
         instance = cls(answer)
         instance.critical = bool(answer.message.stream.read(f'uint:8'))
         instance.tag_length = answer.message.stream.read(f'uint:8')
-        str_tag = answer.message.stream.read(f'bin:{instance.tag_length*8}')
+        str_tag = answer.message.stream.read(f'bin:{instance.tag_length * 8}')
         instance.tag = ''.join([chr(int(x, base=2)) for x in [str_tag[i:i + 8] for i in range(0, len(str_tag), 8)]])
         str_value = answer.message.stream.read(f'bin:{(read_len - instance.tag_length - 2) * 8}')
-        instance.value = ''.join([chr(int(x, base=2)) for x in [str_value[i:i + 8] for i in range(0, len(str_value), 8)]])
+        instance.value = ''.join(
+            [chr(int(x, base=2)) for x in [str_value[i:i + 8] for i in range(0, len(str_value), 8)]])
         return instance
 
     @classmethod

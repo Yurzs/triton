@@ -1,4 +1,5 @@
 from ipaddress import IPv4Address
+
 from .base import ResourceRecord
 
 
@@ -7,7 +8,7 @@ class A(ResourceRecord):
 
         @property
         def full(self):
-            return bin(int(self.resource_record.address))[2:].zfill(8*4)
+            return bin(int(self.resource_record.address))[2:].zfill(8 * 4)
 
     id = 1
     repr = ['address']
@@ -26,7 +27,6 @@ class A(ResourceRecord):
         except AttributeError:
             instance.address = IPv4Address(data[0])
         return instance
-
 
     @property
     def __dict__(self):

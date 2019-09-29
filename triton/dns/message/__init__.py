@@ -1,10 +1,12 @@
-from .answer import Answer, AnswerStorage
-from .question import Question, QuestionStorage
-from .header import Header
-from bitstring import ConstBitStream, BitArray
-from .domains.storage import DomainStorage
 import json
 import random
+
+from bitstring import ConstBitStream, BitArray
+
+from .answer import Answer, AnswerStorage
+from .domains.storage import DomainStorage
+from .header import Header
+from .question import Question, QuestionStorage
 
 
 class Message:
@@ -96,14 +98,13 @@ class Message:
 
     def __repr__(self):
         return str({'header': self.header,
-         'question': self.question,
-         'answer': self.answer,
-         'authority': self.authority,
-         'additional': self.additional})
+                    'question': self.question,
+                    'answer': self.answer,
+                    'authority': self.authority,
+                    'additional': self.additional})
 
     def to_json(self):
         return json.dumps(json.loads(str(self.__repr__()).replace("'", '"')), indent=4)
-
 
     @classmethod
     async def create_question(cls, name, qtype=1, qclass=1, dnssec=False):
@@ -142,9 +143,8 @@ class Message:
                         'rdata': {
                             'options': []
                         }
-                     }
+                    }
                 ]
             }
         )
         return m
-

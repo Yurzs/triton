@@ -38,6 +38,7 @@ class OPT(ResourceRecord):
     def __dict__(self):
         return {'storage': self.storage.__dict__}
 
+
 class Option:
     class _Binary:
         def __init__(self, opt):

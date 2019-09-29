@@ -20,13 +20,14 @@ class ValidationError(Exception):
 
 
 class RSAAlgorithm(Algorithm):
-    signer: RSA
+    signer = RSA
     hasher: SHA
 
     @classmethod
     def verify_rrset(cls, key_rr, rrset, rrsig):
         assert key_rr.rdata.algorithm == cls.id
         assert rrsig.rdata._algorithm == cls.id
+        assert rrsig.rdata.key_tag == key_rr.rdata.key_tag
         now = datetime.datetime.now(tz=datetime.timezone.utc)
         if rrsig.rdata.signature_expiration < now:
             raise ValidationError('Signature expired')
@@ -37,13 +38,15 @@ class RSAAlgorithm(Algorithm):
         signer = PKCS1_v1_5.new(_key)
         hash = cls.hasher.new()
         hash.update(BitArray(bin=rrsig.rdata.Binary.without_signature).bytes)
-        hash.update(b''.join([x.Binary.full_canonical_bytes for x in rrset]))
+        for rr in rrset:
+            hash.update(rr.Binary.full_canonical_bytes)
         return signer.verify(hash, rrsig.rdata._signature)
 
 
 class RSASHA1(RSAAlgorithm):
     id = 5
     signer = RSA
+    hasher = SHA1
 
 
 class RSASHA1_NSEC3_SHA1(RSAAlgorithm):

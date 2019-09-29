@@ -1,6 +1,7 @@
 from .base import Algorithm
-from Cryptodome.PublicKey import DSA as CD_DSA
+from Cryptodome.PublicKey import DSA as Crypto_DSA
 from Cryptodome.Hash import SHA1
+
 
 class DSA(Algorithm):
     pass

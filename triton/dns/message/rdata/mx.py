@@ -1,5 +1,5 @@
-from ..domains.domain import Domain
 from .base import ResourceRecord
+from ..domains.domain import Domain
 
 
 class MX(ResourceRecord):
@@ -17,7 +17,7 @@ class MX(ResourceRecord):
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
-        instance.preference = answer.message.stream.read(f'uint:{2*8}')
+        instance.preference = answer.message.stream.read(f'uint:{2 * 8}')
         instance.exchange = Domain.decode(answer.message)
         return instance
 

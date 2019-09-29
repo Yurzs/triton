@@ -1,5 +1,5 @@
-from ..domains.domain import Domain
 from .base import ResourceRecord
+from ..domains.domain import Domain
 
 
 class SOA(ResourceRecord):

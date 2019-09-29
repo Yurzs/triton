@@ -84,18 +84,18 @@ class Header:
 
     def __mydict__(self):
         return {'id': self._id,
-         'qr': self.qr,
-         'opcode': self._opcode,
-         'aa': self._aa,
-         'tc': self._tc,
-         'rd': self._rd,
-         'ra': self._ra,
-         'z':self._z,
-         'rcode': self._rcode,
-         'qdcount': self.qdcount,
-         'ancount': self.ancount,
-         'nscount': self.nscount,
-         'arcount': self.arcount}
+                'qr': self.qr,
+                'opcode': self._opcode,
+                'aa': self._aa,
+                'tc': self._tc,
+                'rd': self._rd,
+                'ra': self._ra,
+                'z': self._z,
+                'rcode': self._rcode,
+                'qdcount': self.qdcount,
+                'ancount': self.ancount,
+                'nscount': self.nscount,
+                'arcount': self.arcount}
 
     def __repr__(self):
         return str(self.__mydict__())

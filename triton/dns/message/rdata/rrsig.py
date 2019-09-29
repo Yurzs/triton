@@ -1,9 +1,11 @@
-from .base import ResourceRecord
-from triton.dns.message.domains.domain import Domain
 import base64
-from bitstring import BitArray, BitStream
-from triton.dns.dnssec.algorithms import Algorithm
 import datetime
+
+from bitstring import BitArray, BitStream
+
+from triton.dns.dnssec.algorithms import Algorithm
+from triton.dns.message.domains.domain import Domain
+from .base import ResourceRecord
 
 
 class RRSIG(ResourceRecord):
@@ -29,11 +31,6 @@ class RRSIG(ResourceRecord):
             result += format(self.resource_record.signature_inception, 'b').zfill(32)
             result += format(self.resource_record.key_tag, 'b').zfill(16)
             result += self.resource_record.signers_name.sub_encode(self.resource_record.signers_name.label)
-            # for prt in self.resource_record.signers_name.label.split('.'):
-            #     sig_name = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in prt]])
-            #     result += f'{bin(int(len(sig_name) / 8))[2:].zfill(8)}{sig_name}'
-            # else:
-            #     result += str().zfill(8)
             result += BitArray(bytes=self.resource_record._signature).bin
             return result
 
@@ -47,13 +44,7 @@ class RRSIG(ResourceRecord):
             result += format(self.resource_record._signature_inception, 'b').zfill(32)
             result += format(self.resource_record.key_tag, 'b').zfill(16)
             result += self.resource_record.signers_name.sub_encode(self.resource_record.signers_name.label.lower())
-            # for prt in self.resource_record.signers_name.label.split('.'):
-            #     sig_name = ''.join([bin(i)[2:].zfill(8) for i in [ord(c) for c in prt]])
-            #     result += f'{bin(int(len(sig_name) / 8))[2:].zfill(8)}{sig_name}'
-            # else:
-            #     result += str().zfill(8)
             return result
-
 
     id = 46
     repr = ['type_covered',
@@ -79,7 +70,7 @@ class RRSIG(ResourceRecord):
         instance.key_tag = answer.message.stream.read(f'uint:16')
         instance.signers_name = Domain.decode(answer.message)
         end = answer.message.stream.pos
-        instance._signature = answer.message.stream.read(f'bytes:{int(read_len - (end - start)/8)}')
+        instance._signature = answer.message.stream.read(f'bytes:{int(read_len - (end - start) / 8)}')
         return instance
 
     @classmethod
@@ -97,7 +88,6 @@ class RRSIG(ResourceRecord):
         end = stream.pos
         instance._signature = stream.read(f'bytes:{int(len(data) - end / 8)}')
         return instance
-
 
     @property
     def signature(self):

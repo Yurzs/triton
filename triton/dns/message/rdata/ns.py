@@ -1,6 +1,5 @@
-from ipaddress import IPv4Address
-from ..domains.domain import Domain
 from .base import ResourceRecord
+from ..domains.domain import Domain
 
 
 class NS(ResourceRecord):

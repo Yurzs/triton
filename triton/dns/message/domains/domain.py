@@ -4,7 +4,7 @@ import bitstring
 class Domain:
     def __init__(self, label, pos):
         self.injected = False
-        self.label = label.replace('"', '').replace("'",'')
+        self.label = label.replace('"', '').replace("'", '')
         self.pos = pos
 
     @classmethod
@@ -70,13 +70,13 @@ class Domain:
         else:
             resulting_label = ''
             for n, x in enumerate(['.'.join(self.label.split('.')[n:]) for n, x in
-                      enumerate(self.label.split('.'))]):
+                                   enumerate(self.label.split('.'))]):
                 subsearch_result = message.domains.find(x)
                 if subsearch_result:
                     binstring += self.sub_encode(resulting_label)[:-8]
                     binstring += f'11{bin(int(subsearch_result.pos))[2:].zfill(14)}'
                     dmn = Domain('.'.join([resulting_label, subsearch_result.label]),
-                                          message.offset + len(resulting_label) + 1 * n)
+                                 message.offset + len(resulting_label) + 1 * n)
                     message.domains.append(dmn)
                     return binstring
                 else:

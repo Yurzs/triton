@@ -1,4 +1,3 @@
-from bitstring import ConstBitStream
 from .domains.domain import Domain
 
 
@@ -108,4 +107,4 @@ class QuestionStorage:
         self.storage.pop(key)
 
     def __repr__(self):
-        return '['+','.join([a.__repr__() for a in self.storage])+']'
+        return '[' + ','.join([a.__repr__() for a in self.storage]) + ']'

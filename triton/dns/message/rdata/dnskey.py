@@ -1,5 +1,7 @@
 import base64
+
 from bitstring import BitArray
+
 import triton
 from .base import ResourceRecord
 
@@ -22,7 +24,7 @@ class DNSKEY(ResourceRecord):
         pass
 
     id = 48
-    repr = ['flags', 'protocol', 'algorithm', 'public_key']
+    repr = ['key_type', 'protocol', 'algorithm', 'public_key']
 
     @classmethod
     async def parse_bytes(cls, answer: 'triton.dns.message.answer.Answer', read_len: int) -> 'DNSKEY':
@@ -66,7 +68,6 @@ class DNSKEY(ResourceRecord):
     @property
     def key_type(self):
         if self.flags == 257:
-            return self.KSK
+            return 'KSK'
         if self.flags == 256:
-            return self.ZSK
-
+            return 'ZSK'
