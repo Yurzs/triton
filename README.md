@@ -8,7 +8,7 @@ Triton is a simple DNS client made for better understanding of DNS protocol
 
 ## From this repo
 
-```
+```bash
 git clone https://git.best-service.online/yurzs/triton.git  
 cd triton 
 python3 setup.py install
@@ -17,7 +17,7 @@ python3 setup.py install
 ## How to use
 
 Here is an example query for A record of this gitlab instance
-```
+```python3
 >>> import triton
 >>> a = triton.sync_query('8.8.8.8', 'google.com')
 >>> print(a.to_json())
