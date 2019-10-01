@@ -21,11 +21,17 @@ root_ns = {
 }
 
 
+class ResolveStatus:
+    def __init__(self):
+        self.secure = True
+
+
 async def find(label, type=1, dnssec=False):
+    status = ResolveStatus()
     queries = ['.'.join(label.split('.')[::-1][:n + 1][::-1]) for n in range(len(label.split('.')))]
-    zone_ns, zone_keys, zone_ds = await subfind(queries[0])  # Searching for first zone
+    zone_ns, zone_keys, zone_ds = await subfind(status, queries[0])  # Searching for first zone
     for q in queries[1:]:  # Finding each subdomain zone nameserver
-        zone = await subfind(q, zone_ns, zone_ds)
+        zone = await subfind(status, q, zone_ns, zone_ds)
         if zone[0].authority:  # NS answers are placed in authority section.
             zone_ns, zone_keys, zone_ds = zone
         else:  # If no for zone => no point in trying to find its subzones
@@ -43,14 +49,14 @@ async def find(label, type=1, dnssec=False):
             print(f'Server {ns.rdata.address} refused connection')
 
 
-async def subfind(label, zone_ns=None, zone_ds=None):
+async def subfind(status, label, zone_ns=None, zone_ds=None):
     if not zone_ns:
-        return await in_root(label)
+        return await in_root(status, label)
     else:
-        return await in_sub(label, zone_ns, zone_ds)
+        return await in_sub(status, label, zone_ns, zone_ds)
 
 
-async def in_sub(label, zone_ns, parent_ds):
+async def in_sub(status, label, zone_ns, parent_ds):
     for ns in zone_ns.additional:
         try:
             zone = await query(str(ns.rdata.address), label, 2, dnssec=True)
@@ -58,9 +64,15 @@ async def in_sub(label, zone_ns, parent_ds):
             zone_ds = await query(str(ns.rdata.address), label, 43, dnssec=True)
             if zone_ds.answer:
                 assert await zone_ds.verify_rrsig(zone_keys)
-            assert await zone_keys.verify_rrsig(zone_keys)
-            assert await zone.verify_rrsig(zone_keys)
-            assert await zone_keys.verify_keys(parent_ds)
+            if not zone_ds.answer:
+                status.secure = False
+            if status.secure:
+                try:
+                    assert await zone_ds.verify_rrsig(zone_keys)
+                    assert await zone_keys.verify_rrsig(zone_keys)
+                    assert await zone.verify_rrsig(zone_keys)
+                except triton.dns.dnssec.exceptions.VerificationError:
+                    status.secure = False
             if zone:
                 return zone, zone_keys, zone_ds
         except triton.protocol.exception.TimeoutError:
@@ -70,15 +82,21 @@ async def in_sub(label, zone_ns, parent_ds):
             continue
 
 
-async def in_root(label):
+async def in_root(status, label):
     for nsname, ip in root_ns.items():
         try:
             zone = await query(str(ip[0]), label, 2, dnssec=True, timeout=1)
             zone_keys = await query(str(ip[0]), '.', 48, dnssec=True, timeout=1)
             zone_ds = await query(str(ip[0]), label, 43, dnssec=True, timeout=1)
-            assert await zone_ds.verify_rrsig(zone_keys)
-            assert await zone_keys.verify_rrsig(zone_keys)
-            assert await zone.verify_rrsig(zone_keys)
+            if not zone_ds.answer:
+                status.secure = False
+            if status.secure:
+                try:
+                    assert await zone_ds.verify_rrsig(zone_keys)
+                    assert await zone_keys.verify_rrsig(zone_keys)
+                    assert await zone.verify_rrsig(zone_keys)
+                except triton.dns.dnssec.exceptions.VerificationError:
+                    status.secure = False
             if zone:
                 return zone, zone_keys, zone_ds
         except triton.protocol.exception.TimeoutError:

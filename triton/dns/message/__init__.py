@@ -8,6 +8,7 @@ from .domains.storage import DomainStorage
 from .header import Header
 from .question import Question, QuestionStorage
 from .rdata import RRSIG, DS
+from ..dnssec.exceptions import VerificationError
 
 
 class Message:
@@ -162,7 +163,8 @@ class Message:
             results.append(sig.rdata.verify(keys, self.authority))
         for sig in self.additional.by_type(RRSIG):
             results.append(sig.rdata.verify(keys, self.additional))
-        assert all(results)
+        if not all(results):
+            raise VerificationError()
         return True
 
     async def verify_keys(self, ds_message):
