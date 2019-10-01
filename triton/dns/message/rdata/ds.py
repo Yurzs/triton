@@ -2,6 +2,7 @@ from bitstring import BitArray
 
 from triton.dns.dnssec.digest import Digest
 from .base import ResourceRecord
+import triton
 
 
 class DS(ResourceRecord):
@@ -81,8 +82,7 @@ class DS(ResourceRecord):
         :param message: triton.dns.Message
         :return: True is exist and matches and False in any other condition
         """
-        for answer in message.answer:
-            if answer.type == 48:
-                if answer.rdata.key_tag == self.key_tag:
-                    return Digest.verify_from_ds(answer, self.answer)
+        for answer in message.answer.by_type(triton.dns.message.rdata.DNSKEY):
+            if answer.rdata.key_tag == self.key_tag:
+                return Digest.verify_from_ds(answer, self.answer)
         return False

@@ -6,6 +6,7 @@ from bitstring import BitArray, BitStream
 from triton.dns.dnssec.algorithms import Algorithm
 from triton.dns.message.domains.domain import Domain
 from .base import ResourceRecord
+from .dnskey import DNSKEY
 
 
 class RRSIG(ResourceRecord):
@@ -135,5 +136,12 @@ class RRSIG(ResourceRecord):
                 'signers_name': str(self.signers_name),
                 'signature': str(self.signature)}
 
-    def verify(self, key_rr):
-        algo = Algorithm.find_by_id(self.algorithm)
+    def verify(self, keys, search_in):
+        covered_type = ResourceRecord.find_subclass_by_id(self._type_covered)
+        assert covered_type in search_in
+        for key in keys.answer.by_type(DNSKEY):
+            if key.rdata.key_tag == self.key_tag:
+                algo = Algorithm.find_by_id(self._algorithm)
+                return algo.verify_rrset(key, search_in.by_type(covered_type), self.answer)
+        else:
+            raise Exception('No matching key')

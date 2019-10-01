@@ -12,7 +12,6 @@ class Answer:
 
         @property
         def full(self):
-            print('encoding')
             result = self.answer._name.encode(self.answer.message) if self.answer._name else ''
             result += bin(self.answer._type)[2:].zfill(16)
             result += bin(self.answer._cls)[2:].zfill(16)
@@ -73,7 +72,7 @@ class Answer:
 
     @property
     def name(self):
-        return self._name.label
+        return self._name.label if self._name else ''
 
     @property
     def type(self):
@@ -90,13 +89,6 @@ class Answer:
     @property
     def rdata(self):
         return self._rdata
-
-    # def __dct__(self):
-    #     return {'name': self._name.label,
-    #             'type': self._type,
-    #             'class': self._cls,
-    #             'ttl': self._ttl,
-    #             'rdata': self._rdata.__dict__}
 
     def __mydict__(self):
         return {'name': self._name.label if self._name else '',
@@ -166,3 +158,16 @@ class AnswerStorage:
 
     def __repr__(self):
         return '[' + ','.join([a.__repr__() for a in self.storage]) + ']'
+
+    def __contains__(self, item):
+        for x in self.storage:
+            if isinstance(x.rdata, item):
+                return True
+        return False
+
+    def by_type(self, item):
+        result = []
+        for x in self.storage:
+            if isinstance(x.rdata, item):
+                result.append(x)
+        return result

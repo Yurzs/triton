@@ -7,6 +7,7 @@ from .answer import Answer, AnswerStorage
 from .domains.storage import DomainStorage
 from .header import Header
 from .question import Question, QuestionStorage
+from .rdata import RRSIG, DS
 
 
 class Message:
@@ -148,3 +149,24 @@ class Message:
             }
         )
         return m
+
+    @property
+    def reply_data(self):
+        return [self.answer, self.authority, self.additional]
+
+    async def verify_rrsig(self, keys):
+        results = []
+        for sig in self.answer.by_type(RRSIG):
+            results.append(sig.rdata.verify(keys, self.answer))
+        for sig in self.authority.by_type(RRSIG):
+            results.append(sig.rdata.verify(keys, self.authority))
+        for sig in self.additional.by_type(RRSIG):
+            results.append(sig.rdata.verify(keys, self.additional))
+        assert all(results)
+        return True
+
+    async def verify_keys(self, ds_message):
+        ds = ds_message.answer.by_type(DS)
+        assert len(ds) == 1
+        ds = ds[0]
+        return ds.rdata.verify_from_message(self)

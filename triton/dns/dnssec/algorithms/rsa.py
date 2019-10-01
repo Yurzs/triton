@@ -15,32 +15,15 @@ class RSAPublicKey:
         self.modulus = int.from_bytes(rr.rdata._public_key[1 + len_pe:], byteorder='big')
 
 
-class ValidationError(Exception):
-    pass
-
-
 class RSAAlgorithm(Algorithm):
     signer = RSA
     hasher: SHA
 
     @classmethod
-    def verify_rrset(cls, key_rr, rrset, rrsig):
-        assert key_rr.rdata.algorithm == cls.id
-        assert rrsig.rdata._algorithm == cls.id
-        assert rrsig.rdata.key_tag == key_rr.rdata.key_tag
-        now = datetime.datetime.now(tz=datetime.timezone.utc)
-        if rrsig.rdata.signature_expiration < now:
-            raise ValidationError('Signature expired')
-        elif rrsig.rdata.signature_inception > now:
-            raise ValidationError('Signature inception time is in future')
+    def construct_signer(cls, key_rr):
         rsa_key = RSAPublicKey(key_rr)
         _key = cls.signer.construct((rsa_key.modulus, rsa_key.public_exponent))
-        signer = PKCS1_v1_5.new(_key)
-        hash = cls.hasher.new()
-        hash.update(BitArray(bin=rrsig.rdata.Binary.without_signature).bytes)
-        for rr in rrset:
-            hash.update(rr.Binary.full_canonical_bytes)
-        return signer.verify(hash, rrsig.rdata._signature)
+        return PKCS1_v1_5.new(_key)
 
 
 class RSASHA1(RSAAlgorithm):

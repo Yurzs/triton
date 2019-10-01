@@ -22,6 +22,10 @@ class BitMapWindow:
                 'length': self.length,
                 'data': self.data}
 
+    @property
+    def binary(self):
+        return bin(self.number)[2:].zfill(8) + bin(self.length)[2:].zfill(8) + self.data.zfill(8*self.length)
+
 
 class BitMapWindowStorage:
     def __init__(self):
@@ -68,35 +72,52 @@ class BitMapWindowStorage:
     def __dict__(self):
         return [bmw.__dict__ for bmw in self.storage]
 
+    @property
+    def binary(self):
+        return ''.join([x.binary for x in self.storage])
+
 
 class NSEC(ResourceRecord):
     class _Binary(ResourceRecord._Binary):
-        pass
+
+        @property
+        def full(self):
+            result = self.resource_record.next_domain_name.sub_encode(self.resource_record.next_domain_name.label)
+            result += BitArray(bytes=self.resource_record.type_bitmaps).bin
+            return result
 
     id = 47
+    repr = ['next_domain_name',
+            'type_bitmaps_']
 
     @classmethod
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.next_domain_name = Domain.decode(answer.message)
-        instance.bitmap_windows = BitMapWindowStorage()
+        instance.type_bitmaps_ = BitMapWindowStorage()
         wn = answer.message.stream.read('uint:8')
         wlen = answer.message.stream.read('uint:8')
-        instance.bitmap_windows.push(BitMapWindow(wn, wlen, answer.message.stream.read(f'bin:{8 * wlen}')))
-        wn = answer.message.stream.read('uint:8')
-        wlen = answer.message.stream.read('uint:8')
-        instance.bitmap_windows.push(BitMapWindow(wn, wlen, answer.message.stream.read(f'bin:{8 * wlen}')))
+        instance.type_bitmaps_.push(BitMapWindow(wn, wlen, answer.message.stream.read(f'bin:{8 * wlen}')))
+        if answer.message.stream.peek('uint:8') == 1:
+            wn = answer.message.stream.read('uint:8')
+            wlen = answer.message.stream.read('uint:8')
+            instance.type_bitmaps_.push(BitMapWindow(wn, wlen, answer.message.stream.read(f'bin:{8 * wlen}')))
         return instance
 
     @classmethod
     async def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.next_domain_name = Domain(data.get('next_domain_name'), None)
-        instance.bitmap_windows = BitMapWindowStorage.from_list(data.get('type_bitmaps'))
+        instance.type_bitmaps_ = BitMapWindowStorage.from_list(data.get('type_bitmaps'))
         return instance
 
+    @property
+    def type_bitmaps(self):
+        return self.type_bitmaps_.types
+
     def __dict__(self):
-        return {'next_domain_name': self.next_domain.name.label}
+        return {'next_domain_name': self.next_domain.name.label,
+                'type_bitmaps_': self.type_bitmaps}
 
 
 class NSEC3(ResourceRecord):
@@ -104,14 +125,14 @@ class NSEC3(ResourceRecord):
 
         @property
         def full(self):
-            result = bin(self.resource_record.hash_algorithm)[2:].zfill(8)
+            result = bin(self.resource_record._hash_algorithm)[2:].zfill(8)
             result += bin(self.resource_record.flags)[2:].zfill(8)
             result += bin(self.resource_record.iterations)[2:].zfill(16)
             result += bin(self.resource_record.salt_length)[2:].zfill(8)
-            result += BitArray(bytes=self.resource_record.salt).bin
+            result += BitArray(bytes=self.resource_record._salt).bin
             result += bin(self.resource_record.hash_length)[2:].zfill(8)
-            result += BitArray(bytes=self.resource_record.next_hashed_owner_name).bin
-            result += BitArray(bytes=self.resource_record.type_bitmaps).bin
+            result += BitArray(bytes=self.resource_record._next_hashed_owner_name).bin
+            result += self.resource_record.type_bitmaps_.binary
             return result
 
     id = 50
@@ -137,9 +158,10 @@ class NSEC3(ResourceRecord):
         wn = answer.message.stream.read('uint:8')
         wlen = answer.message.stream.read('uint:8')
         instance.type_bitmaps_.push(BitMapWindow(wn, wlen, answer.message.stream.read(f'bin:{8 * wlen}')))
-        wn = answer.message.stream.read('uint:8')
-        wlen = answer.message.stream.read('uint:8')
-        instance.type_bitmaps_.push(BitMapWindow(wn, wlen, answer.message.stream.read(f'bin:{8 * wlen}')))
+        if answer.message.stream.peek('uint:8') == 1:
+            wn = answer.message.stream.read('uint:8')
+            wlen = answer.message.stream.read('uint:8')
+            instance.type_bitmaps_.push(BitMapWindow(wn, wlen, answer.message.stream.read(f'bin:{8 * wlen}')))
         return instance
 
     @classmethod
@@ -163,9 +185,6 @@ class NSEC3(ResourceRecord):
     def salt(self):
         return self._salt.hex().upper()
 
-    @property
-    def type_bitmaps(self):
-        return self.type_bitmaps_.types
 
     @property
     def next_hashed_owner_name(self):

@@ -30,7 +30,7 @@ class Domain:
                     break
                 if not message.stream.peek('uint:8'):
                     break
-        _domain = None
+        _domain = Domain('', None)
         try:
             if cut_last_octet:
                 message.stream.read('bin:8')  # last 00000000 of length octet
@@ -45,7 +45,7 @@ class Domain:
 
     @staticmethod
     def sub_encode(label):
-        if label == '':
+        if label == '' or label == '.':
             return str('').zfill(8)
         binary_string = ''
         parts = label.split('.')
@@ -58,6 +58,8 @@ class Domain:
 
     def encode(self, message):
         ## TODO clean this mess maybe? but it works
+        if self.label == '' or self.label == '.':
+            return str('').zfill(8)
         binstring = ''
         search_result = message.domains.find(self.label)
         if isinstance(search_result, Domain):

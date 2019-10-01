@@ -12,8 +12,8 @@ class DNSKEY(ResourceRecord):
         @property
         def full(self):
             result = bin(self.resource_record.flags)[2:].zfill(16)
-            result += bin(self.resource_record.protocol)[2:].zfill(8)
-            result += bin(self.resource_record.algorithm)[2:].zfill(8)
+            result += bin(self.resource_record._protocol)[2:].zfill(8)
+            result += bin(self.resource_record._algorithm)[2:].zfill(8)
             result += BitArray(bytes=self.resource_record._public_key).bin
             return result
 
@@ -32,8 +32,8 @@ class DNSKEY(ResourceRecord):
         assert isinstance(read_len, int)
         instance = cls(answer)
         instance.flags = answer.message.stream.read(f'uint:16')
-        instance.protocol = answer.message.stream.read(f'uint:8')
-        instance.algorithm = answer.message.stream.read(f'uint:8')
+        instance._protocol = answer.message.stream.read(f'uint:8')
+        instance._algorithm = answer.message.stream.read(f'uint:8')
         instance._public_key = answer.message.stream.read(f'bytes:{read_len - 4}')
         assert isinstance(instance._public_key, bytes)
         return instance
@@ -44,8 +44,8 @@ class DNSKEY(ResourceRecord):
         assert isinstance(data, dict)
         instance = cls(answer)
         instance.flags = data.get('flags')
-        instance.protocol = 3
-        instance.algorithm = data.get('algorithm')
+        instance._protocol = 3
+        instance._algorithm = data.get('algorithm')
         instance._public_key = data.get('public_key')
         assert isinstance(instance._public_key, bytes)
         return instance
@@ -56,7 +56,7 @@ class DNSKEY(ResourceRecord):
 
     @property
     def key_tag(self):
-        if self.algorithm == 1:
+        if self._algorithm == 1:
             return 0
         else:
             ac = 0
@@ -71,3 +71,11 @@ class DNSKEY(ResourceRecord):
             return 'KSK'
         if self.flags == 256:
             return 'ZSK'
+
+    @property
+    def protocol(self):
+        return self._protocol
+
+    @property
+    def algorithm(self):
+        return triton.dns.dnssec.algorithms.Algorithm.find_by_id(self._algorithm).__name__
