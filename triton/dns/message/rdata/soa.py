@@ -52,3 +52,16 @@ class SOA(ResourceRecord):
                 'retry': self.retry,
                 'expire': self.expire,
                 'minimum': self.minimum}
+
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance.mname = Domain(data.get('mname'), None)
+        instance.rname = Domain(data.get('rname'), None)
+        instance.serial = data.get('serial')
+        instance.refresh = data.get('refresh')
+        instance.retry = data.get('retry')
+        instance.expire = data.get('expire')
+        instance.minimum = data.get('minimum')
+        return instance

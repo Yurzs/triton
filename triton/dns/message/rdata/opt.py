@@ -38,6 +38,13 @@ class OPT(ResourceRecord):
     def __dict__(self):
         return {'storage': self.storage.__dict__}
 
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        for opt in data.get('options', []):
+            instance.storage.append(Option(**opt))
+        return instance
+
 
 class Option:
     class _Binary:

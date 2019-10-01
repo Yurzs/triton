@@ -66,5 +66,15 @@ class Algorithm:
             raise Exception('Unknown algorithm id')
 
     @classmethod
+    def find_by_name(cls, name: str):
+        for subtype in Algorithm.__subclasses__():
+            for subclass in subtype.__subclasses__():
+                if subclass.__name__.lower() == name.lower():
+                    return subclass
+        else:
+            raise Exception(f'Unknown algorithm name {name}')
+
+
+    @classmethod
     def sign_rrset(cls, key, rrset):
         pass

@@ -29,3 +29,10 @@ class ResourceRecord:
             if subclass.id == id:
                 return subclass
         raise ValueError(f'No subclass with id {id}')
+
+    @classmethod
+    def fin_subclass_by_name(cls, name):
+        for subclass in ResourceRecord.__subclasses__():
+            if subclass.__name__ == name:
+                return subclass
+        raise ValueError(f'No subclass with name {name}')

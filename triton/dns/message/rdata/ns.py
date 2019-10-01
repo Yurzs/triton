@@ -27,3 +27,10 @@ class NS(ResourceRecord):
     @property
     def __dict__(self):
         return {'nsdname': self.nsdname.label}
+
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance.nsdname = Domain(data.get('label', data.get('nsdname')), None)
+        return instance

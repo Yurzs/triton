@@ -145,3 +145,17 @@ class RRSIG(ResourceRecord):
                 return algo.verify_rrset(key, search_in.by_type(covered_type), self.answer)
         else:
             raise Exception('No matching key')
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance._type_covered = ResourceRecord.fin_subclass_by_name(data.get('type_covered')).id
+        instance._algorithm = Algorithm.find_by_name(data.get('algorithm')).id
+        instance.labels = data.get('labels')
+        instance.original_ttl = data.get('original_ttl')
+        instance._signature_expiration = datetime.datetime.fromisoformat(data.get('signature_expiration'))
+        instance._signature_inception = datetime.datetime.fromisoformat(data.get('signature_inception'))
+        instance.key_tag = data.get('key_tag')
+        instance.signers_name = Domain(data.get('signers_name'), None)
+        instance._signature = base64.b64decode(data.get('signature'))
+        return instance

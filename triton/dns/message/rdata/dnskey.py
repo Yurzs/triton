@@ -86,3 +86,12 @@ class DNSKEY(ResourceRecord):
                 'protocol': self._protocol,
                 'algorithm': self._algorithm,
                 'public_key': self._public_key}
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance.flags = data.get('flags')
+        instance._protocol = 3
+        instance._algorithm = triton.dns.dnssec.algorithms.Algorithm.find_by_name(data.get('algorithm')).id
+        instance._public_key = base64.b64decode(data.get('public_key'))
+        return instance

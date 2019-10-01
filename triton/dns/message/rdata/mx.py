@@ -32,3 +32,10 @@ class MX(ResourceRecord):
     def __dict__(self):
         return {'preference': self.preference,
                 'exchange': self.exchange.label}
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance.preference = data.get('preference')
+        instance.exchange = Domain(data.get('exchange'), None)
+        return instance

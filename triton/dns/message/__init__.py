@@ -108,6 +108,24 @@ class Message:
     def to_json(self):
         return json.dumps(json.loads(str(self.__repr__()).replace("'", '"')), indent=4)
 
+    def from_json(self, data):
+        data = json.loads(data)
+        for answ in data.get('answer', []):
+            self.from_json_answer(answ)
+        for auth in data.get('authority', []):
+            self.from_json_authority(auth)
+        for addi in data.get('additional', []):
+            self.from_json_additional(addi)
+
+    def from_json_answer(self, data):
+        self.answer.append(Answer.from_json(self, data))
+
+    def from_json_additional(self, data):
+        self.authority.append(Answer.from_json(self, data))
+
+    def from_json_authority(self, data):
+        self.additional.append(Answer.from_json(self, data))
+
     @classmethod
     async def create_question(cls, name, qtype=1, qclass=1, dnssec=False):
         m = await Message.parse_dict(

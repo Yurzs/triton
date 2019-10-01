@@ -104,6 +104,16 @@ class Answer:
                     'ttl': self._ttl,
                     'rdata': self._rdata})
 
+    @classmethod
+    def from_json(cls, message, data):
+        answer = cls(message)
+        answer._name = Domain(data.get('name'), None)
+        answer._type = ResourceRecord.fin_subclass_by_name(data.get('type')).id
+        answer._cls = data.get('class')
+        answer._ttl = data.get('ttl')
+        answer._rdata = rdata_cls[int(answer._type)].from_json(answer, data.get('rdata'))
+        return answer
+
 
 class AnswerStorage:
     class _Binary:

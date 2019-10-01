@@ -76,6 +76,13 @@ class BitMapWindowStorage:
     def binary(self):
         return ''.join([x.binary for x in self.storage])
 
+    @classmethod
+    def from_json(cls, data):
+        instance = cls()
+        for item in data:
+            instance.push(BitMapWindow(**item))
+        return instance
+
 
 class NSEC(ResourceRecord):
     class _Binary(ResourceRecord._Binary):
@@ -113,11 +120,18 @@ class NSEC(ResourceRecord):
 
     @property
     def type_bitmaps(self):
-        return self.type_bitmaps_.types
+        return self.type_bitmaps_.__dict__
 
     def __dict__(self):
         return {'next_domain_name': self.next_domain.name.label,
                 'type_bitmaps_': self.type_bitmaps}
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance.next_domain_name = Domain(data.get('next_domain_name'), None)
+        instance.type_bitmaps_ = BitMapWindowStorage.from_list(data.get('type_bitmaps'))
+        return instance
 
 
 class NSEC3(ResourceRecord):
@@ -203,6 +217,19 @@ class NSEC3(ResourceRecord):
                 'salt': self._salt,
                 'hash_length': len(self.bitmap_windows),
                 'type_bitmaps': self.bitmap_windows.__dict__}
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance._hash_algorithm = data.get('hash_algorithm')
+        instance.flags = data.get('flags')
+        instance.iterations = data.get('iterations')
+        instance.salt_length = len(data.get('salt'))
+        instance._salt = data.get('salt')
+        instance.hash_length = len(data.get('next_hashed_owner_name'))
+        instance._next_hashed_owner_name = data.get('next_hashed_owner_name')
+        instance.bitmap_windows = BitMapWindowStorage.from_list(data.get('type_bitmaps'))
+        return instance
 
 
 class NSEC3PARAM(ResourceRecord):

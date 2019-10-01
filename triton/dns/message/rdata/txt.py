@@ -28,3 +28,9 @@ class TXT(ResourceRecord):
     @property
     def __dict__(self):
         return {'txt_data': self.txt_data}
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance.txt_data = data.get('txt_data')
+        return instance

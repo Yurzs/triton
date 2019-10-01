@@ -1,4 +1,6 @@
 from .base import ResourceRecord
+import triton
+import base64
 
 
 class KEY(ResourceRecord):
@@ -21,24 +23,41 @@ class KEY(ResourceRecord):
     async def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.flags = answer.message.stream.read(f'bin:16')
-        instance.protocol = answer.message.stream.read(f'uint:8')
-        instance.algorithm = answer.message.stream.read(f'uint:8')
+        instance._protocol = answer.message.stream.read(f'uint:8')
+        instance._algorithm = answer.message.stream.read(f'uint:8')
         str_ = answer.message.stream.read(f'bin:{read_len - 4}')
-        instance.public_key = ''.join([chr(int(x, base=2)) for x in [str[i:i + 8] for i in range(0, len(str_), 8)]])
+        instance._public_key = ''.join([chr(int(x, base=2)) for x in [str[i:i + 8] for i in range(0, len(str_), 8)]])
         return instance
 
     @classmethod
     async def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.flags = data.get('flags')
-        instance.protocol = 3
-        instance.algorithm = data.get('algorithm')
-        instance.public_key = data.get('public_key')
+        instance._protocol = 3
+        instance._algorithm = data.get('algorithm')
+        instance._public_key = data.get('public_key')
         return instance
 
     @property
+    def protocol(self):
+        return self._protocol
+
+    @property
+    def algorithm(self):
+        return triton.dns.dnssec.algorithms.Algorithm.find_by_id(self._algorithm).__name__
+
+    @property
     def __dict__(self):
-        return {'flags': int(self.flags),
-                'protocol': int(self.protocol),
-                'algorithm': int(self.algorithm),
-                'public_key': str(self.public_key)}
+        return {'flags': self.flags,
+                'protocol': self._protocol,
+                'algorithm': self._algorithm,
+                'public_key': self._public_key}
+
+    @classmethod
+    def from_json(cls, answer, data):
+        instance = cls(answer)
+        instance.flags = data.get('flags')
+        instance._protocol = 3
+        instance._algorithm = triton.dns.dnssec.algorithms.Algorithm.find_by_name(data.get('algorithm')).id
+        instance._public_key = base64.b64decode(data.get('public_key'))
+        return instance
