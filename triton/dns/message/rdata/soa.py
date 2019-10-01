@@ -45,8 +45,8 @@ class SOA(ResourceRecord):
 
     @property
     def __dict__(self):
-        return {'mname': self.mname,
-                'rname': self.rname,
+        return {'mname': self.mname.label,
+                'rname': self.rname.label,
                 'serial': self.serial,
                 'refresh': self.refresh,
                 'retry': self.retry,

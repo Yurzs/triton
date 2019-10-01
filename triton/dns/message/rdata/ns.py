@@ -26,4 +26,4 @@ class NS(ResourceRecord):
 
     @property
     def __dict__(self):
-        return {'nsdname': self.nsdname}
+        return {'nsdname': self.nsdname.label}

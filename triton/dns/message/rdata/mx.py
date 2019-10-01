@@ -31,4 +31,4 @@ class MX(ResourceRecord):
     @property
     def __dict__(self):
         return {'preference': self.preference,
-                'exchange': self.exchange.__dict__}
+                'exchange': self.exchange.label}

@@ -79,3 +79,10 @@ class DNSKEY(ResourceRecord):
     @property
     def algorithm(self):
         return triton.dns.dnssec.algorithms.Algorithm.find_by_id(self._algorithm).__name__
+
+    @property
+    def __dict__(self):
+        return {'flags': self.flags,
+                'protocol': self._protocol,
+                'algorithm': self._algorithm,
+                'public_key': self._public_key}

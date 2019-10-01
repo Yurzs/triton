@@ -104,7 +104,7 @@ class RRSIG(ResourceRecord):
         instance._signature_expiration = data.get('signature_expiration')
         instance._signature_inception = data.get('signature_inception')
         instance.key_tag = data.get('key_tag')
-        instance.signers_name = data.get('signers_name')
+        instance.signers_name = Domain(data.get('signers_name'), None)
         instance._signature = data.get('signature')
         return instance
 
@@ -133,8 +133,8 @@ class RRSIG(ResourceRecord):
                 'signature_expiration': int(self._signature_expiration),
                 'signature_inception': int(self._signature_inception),
                 'key_tag': int(self.key_tag),
-                'signers_name': str(self.signers_name),
-                'signature': str(self.signature)}
+                'signers_name': str(self.signers_name.label),
+                'signature': str(self._signature)}
 
     def verify(self, keys, search_in):
         covered_type = ResourceRecord.find_subclass_by_id(self._type_covered)
