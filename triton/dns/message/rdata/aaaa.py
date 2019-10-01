@@ -22,10 +22,7 @@ class AAAA(ResourceRecord):
     @classmethod
     async def parse_dict(cls, answer, data):
         instance = cls(answer)
-        try:
-            instance.address = IPv6Address(data.get('address'))
-        except AttributeError:
-            instance.address = IPv6Address(data[0])
+        instance.address = IPv6Address(data.get('address'))
         return instance
 
     @property

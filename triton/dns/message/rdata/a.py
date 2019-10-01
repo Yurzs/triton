@@ -22,10 +22,7 @@ class A(ResourceRecord):
     @classmethod
     async def parse_dict(cls, answer, data):
         instance = cls(answer)
-        try:
-            instance.address = IPv4Address(data.get('address'))
-        except AttributeError:
-            instance.address = IPv4Address(data[0])
+        instance.address = IPv4Address(data.get('address'))
         return instance
 
     @property

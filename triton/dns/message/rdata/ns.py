@@ -21,10 +21,7 @@ class NS(ResourceRecord):
     @classmethod
     async def parse_dict(cls, answer, data):
         instance = cls(answer)
-        try:
-            instance.nsdname = Domain(data.get('label', data.get('nsdname')), None)
-        except AttributeError:
-            instance.nsdname = Domain(data[2], None)
+        instance.nsdname = Domain(data.get('label', data.get('nsdname')), None)
         return instance
 
     @property
