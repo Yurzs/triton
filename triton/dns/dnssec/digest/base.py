@@ -46,4 +46,4 @@ class Digest:
 
     @classmethod
     def verify_from_ds(cls, key_resource_record, ds_resource_record):
-        return Digest.by_id(ds_resource_record.rdata.digest_type).verify_key_rr(key_resource_record, ds_resource_record)
+        return Digest.by_id(ds_resource_record.rdata._digest_type).verify_key_rr(key_resource_record, ds_resource_record)

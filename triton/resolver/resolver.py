@@ -1,4 +1,4 @@
-from .root import find
+from .root import ChainResolver
 
 
 class Resolver:
@@ -7,4 +7,5 @@ class Resolver:
         self.connection = connection
 
     async def find(self, type: int, cls: int, name: str) -> dict:
-        return await find(label=name, type=type)
+        resolver = ChainResolver(name, type)
+        return await resolver.go()

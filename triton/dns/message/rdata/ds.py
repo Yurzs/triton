@@ -63,7 +63,7 @@ class DS(ResourceRecord):
 
     @property
     def digest_type(self):
-        return triton.dns.dnssec.digest.Digest.by_id(self._digest).__name__
+        return triton.dns.dnssec.digest.Digest.by_id(self._digest_type).__name__
 
     @property
     def __dict__(self):

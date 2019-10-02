@@ -175,7 +175,7 @@ class AnswerStorage:
                 return True
         return False
 
-    def by_type(self, item):
+    def by_type(self, *item):
         result = []
         for x in self.storage:
             if isinstance(x.rdata, item):

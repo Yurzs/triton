@@ -32,7 +32,11 @@ class UdpClient:
 
     async def timeout_task(self, time):
         await asyncio.sleep(time)
-        if not self.on_con_lost.result():
+        try:
+            if not self.on_con_lost.result():
+                self.on_con_lost.set_exception(TimeoutError)
+                self.on_con_lost.exception()
+        except asyncio.base_futures.InvalidStateError:
             self.on_con_lost.set_exception(TimeoutError)
             self.on_con_lost.exception()
 
