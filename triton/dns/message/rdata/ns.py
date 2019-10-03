@@ -28,7 +28,6 @@ class NS(ResourceRecord):
     def __dict__(self):
         return {'nsdname': self.nsdname.label}
 
-
     @classmethod
     def from_json(cls, answer, data):
         instance = cls(answer)

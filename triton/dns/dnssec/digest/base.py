@@ -1,5 +1,6 @@
 from bitstring import BitArray
-from triton.dns.message.domains.domain import Domain
+
+
 
 
 class Digest:
@@ -12,9 +13,10 @@ class Digest:
         :param key_resource_record:
         :return:
         """
-
+        from triton.dns.message.domains.domain import Domain
         h = cls.hasher.new()
-        h.update(BitArray(bin=Domain.sub_encode(key_resource_record.name) + key_resource_record.rdata.Binary.full).bytes)
+        h.update(
+            BitArray(bin=Domain.sub_encode(key_resource_record.name) + key_resource_record.rdata.Binary.full).bytes)
         return h.digest()
 
     @classmethod
@@ -46,4 +48,5 @@ class Digest:
 
     @classmethod
     def verify_from_ds(cls, key_resource_record, ds_resource_record):
-        return Digest.by_id(ds_resource_record.rdata._digest_type).verify_key_rr(key_resource_record, ds_resource_record)
+        return Digest.by_id(ds_resource_record.rdata._digest_type).verify_key_rr(key_resource_record,
+                                                                                 ds_resource_record)

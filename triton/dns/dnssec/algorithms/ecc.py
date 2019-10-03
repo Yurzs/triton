@@ -1,7 +1,6 @@
-from .base import Algorithm
-from Cryptodome.Signature import PKCS1_v1_5
-from Cryptodome.PublicKey import ECC
 from Cryptodome.Hash import SHA256
+
+from .base import Algorithm
 
 
 class ECCAlgorithm(Algorithm):

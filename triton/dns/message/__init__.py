@@ -9,7 +9,7 @@ from .header import Header
 from .question import Question, QuestionStorage
 from .rdata import RRSIG, DS
 from ..dnssec.exceptions import VerificationError
-
+import asyncio
 
 class Message:
     class _Binary:
@@ -168,6 +168,11 @@ class Message:
             }
         )
         return m
+
+    @classmethod
+    def sync_create_question(cls, *args, **kwargs):
+        return asyncio.run(cls.create_question(*args, **kwargs))
+
 
     @property
     def reply_data(self):

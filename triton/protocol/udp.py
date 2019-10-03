@@ -1,5 +1,5 @@
 import asyncio
-
+import triton
 from triton.dns.message import Message
 from .exception import TimeoutError
 
@@ -42,7 +42,7 @@ class UdpClient:
 
     @classmethod
     async def send_message(cls, message, host, port=53, timeout=5):
-        loop = asyncio.get_event_loop()
+        loop = triton.loop
         on_con_lost = loop.create_future()
         transport, protocol = await loop.create_datagram_endpoint(
             lambda: cls(loop, message, on_con_lost, timeout),

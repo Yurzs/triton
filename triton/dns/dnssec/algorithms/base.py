@@ -74,7 +74,6 @@ class Algorithm:
         else:
             raise Exception(f'Unknown algorithm name {name}')
 
-
     @classmethod
     def sign_rrset(cls, key, rrset):
         pass

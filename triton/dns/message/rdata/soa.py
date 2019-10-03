@@ -53,7 +53,6 @@ class SOA(ResourceRecord):
                 'expire': self.expire,
                 'minimum': self.minimum}
 
-
     @classmethod
     def from_json(cls, answer, data):
         instance = cls(answer)

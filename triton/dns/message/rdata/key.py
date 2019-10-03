@@ -1,6 +1,7 @@
-from .base import ResourceRecord
-import triton
 import base64
+
+import triton
+from .base import ResourceRecord
 
 
 class KEY(ResourceRecord):

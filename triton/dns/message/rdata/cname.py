@@ -1,5 +1,5 @@
-from .base import ResourceRecord
 from triton.dns.message.domains.domain import Domain
+from .base import ResourceRecord
 
 
 class CNAME(ResourceRecord):

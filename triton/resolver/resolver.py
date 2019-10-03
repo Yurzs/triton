@@ -7,5 +7,5 @@ class Resolver:
         self.connection = connection
 
     async def find(self, type: int, cls: int, name: str) -> dict:
-        resolver = ChainResolver(name, type)
+        resolver = ChainResolver(name, type, neptune_connection=self.connection)
         return await resolver.go()

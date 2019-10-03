@@ -24,7 +24,7 @@ class BitMapWindow:
 
     @property
     def binary(self):
-        return bin(self.number)[2:].zfill(8) + bin(self.length)[2:].zfill(8) + self.data.zfill(8*self.length)
+        return bin(self.number)[2:].zfill(8) + bin(self.length)[2:].zfill(8) + self.data.zfill(8 * self.length)
 
 
 class BitMapWindowStorage:
@@ -198,7 +198,6 @@ class NSEC3(ResourceRecord):
     @property
     def salt(self):
         return self._salt.hex().upper()
-
 
     @property
     def next_hashed_owner_name(self):

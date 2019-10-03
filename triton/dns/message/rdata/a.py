@@ -30,7 +30,7 @@ class A(ResourceRecord):
         return {'address': int(self.address)}
 
     @classmethod
-    def from_json(cls, answer,  data):
+    def from_json(cls, answer, data):
         instance = cls(answer)
         instance.address = IPv4Address(data.get('address'))
         return instance

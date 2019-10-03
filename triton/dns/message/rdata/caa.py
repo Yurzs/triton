@@ -42,9 +42,8 @@ class CAA(ResourceRecord):
                 'tag': str(self.tag),
                 'value': str(self.value)}
 
-
     @classmethod
-    def from_json(cls, answer,  data):
+    def from_json(cls, answer, data):
         instance = cls(answer)
         instance.critical = data.get('critical')
         instance.tag = data.get('tag')

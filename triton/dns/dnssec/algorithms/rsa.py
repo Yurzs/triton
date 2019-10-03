@@ -1,9 +1,6 @@
-import datetime
-
 from Cryptodome.Hash import SHA1, SHA256, SHA512, SHA
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Signature import PKCS1_v1_5
-from bitstring import BitArray
 
 from .base import Algorithm
 

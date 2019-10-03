@@ -8,6 +8,6 @@ class EDAlgorithm(Algorithm):
 class ED448(EDAlgorithm):
     id = 16
 
+
 class ED25519(EDAlgorithm):
     id = 15
-

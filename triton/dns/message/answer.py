@@ -3,7 +3,7 @@ from bitstring import BitArray
 from triton.dns.message.rdata import ResourceRecord
 from .domains.domain import Domain
 from .rdata import rdata_cls
-
+import asyncio
 
 class Answer:
     class _Binary:
@@ -65,6 +65,10 @@ class Answer:
         answer._ttl = data.get('ttl')
         answer._rdata = await rdata_cls[int(answer._type)].parse_dict(answer, data.get('rdata'))
         return answer
+
+    @classmethod
+    def sync_parse_dict(cls, message, data):
+        return asyncio.run(cls.parse_dict(message, data))
 
     @property
     def rdlength(self):
@@ -136,6 +140,7 @@ class AnswerStorage:
 
     def append(self, answer: Answer):
         assert isinstance(answer, Answer), f'What the heck is that {self.__class__.__name__.lower()}?'
+        answer.message = self.message
         self.storage.append(answer)
 
     @classmethod

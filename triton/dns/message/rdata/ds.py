@@ -1,8 +1,7 @@
 from bitstring import BitArray
 
-from triton.dns.dnssec.digest import Digest
-from .base import ResourceRecord
 import triton
+from .base import ResourceRecord
 
 
 class DS(ResourceRecord):
@@ -82,7 +81,7 @@ class DS(ResourceRecord):
         :param key: triton.dns.message.Answer
         :return: True if matches, False if not. Raises if key_tag dont match
         """
-        return Digest.verify_from_ds(key, self.answer)
+        return triton.dns.dnssec.digest.Digest.verify_from_ds(key, self.answer)
 
     def verify_from_message(self, message):
         """
@@ -92,7 +91,7 @@ class DS(ResourceRecord):
         """
         for answer in message.answer.by_type(triton.dns.message.rdata.DNSKEY):
             if answer.rdata.key_tag == self.key_tag:
-                return Digest.verify_from_ds(answer, self.answer)
+                return triton.dns.dnssec.digest.Digest.verify_from_ds(answer, self.answer)
         return False
 
     @classmethod

@@ -39,12 +39,14 @@ class Edns:
 
     async def inject(self):
         answ = await Answer.parse_dict(self.new_message,
-                              {
-                                  'name': '',
-                                  'type': 41,
-                                  'class': self.udp_size_limit,
-                                  'ttl': int(f'{bin(self.extended_rcode)[2:].zfill(8)}{bin(self.version)[2:].zfill(8)}{bin(self.dnssec)[2:].zfill(1)}{bin(self.z)[2:].zfill(15)}',base=2),
-                                  'rdata': {}
-                              }
-                              )
+                                       {
+                                           'name': '',
+                                           'type': 41,
+                                           'class': self.udp_size_limit,
+                                           'ttl': int(
+                                               f'{bin(self.extended_rcode)[2:].zfill(8)}{bin(self.version)[2:].zfill(8)}{bin(self.dnssec)[2:].zfill(1)}{bin(self.z)[2:].zfill(15)}',
+                                               base=2),
+                                           'rdata': {}
+                                       }
+                                       )
         self.new_message.additional.append(answ)

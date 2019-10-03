@@ -1,3 +1,3 @@
-from .message import Message
-from .edns import Edns
 from . import dnssec
+from .edns import Edns
+from .message import Message
