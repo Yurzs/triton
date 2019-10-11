@@ -46,29 +46,25 @@ class Answer:
         self.Binary = self._Binary(self)
 
     @classmethod
-    async def parse_bytes(cls, message):
+    def parse_bytes(cls, message):
         answer = cls(message)
         answer._name = Domain.decode(message)
         answer._type = message.stream.read('uint:16')
         answer._cls = message.stream.read('uint:16')
         answer._ttl = message.stream.read('uint:32')
         answer._rdlength = message.stream.read('uint:16')
-        answer._rdata = await rdata_cls[int(answer._type)].parse_bytes(answer, answer._rdlength)
+        answer._rdata = rdata_cls[int(answer._type)].parse_bytes(answer, answer._rdlength)
         return answer
 
     @classmethod
-    async def parse_dict(cls, message, data):
+    def parse_dict(cls, message, data):
         answer = cls(message)
         answer._name = Domain(data.get('name'), None)
         answer._type = data.get('type')
         answer._cls = data.get('class')
         answer._ttl = data.get('ttl')
-        answer._rdata = await rdata_cls[int(answer._type)].parse_dict(answer, data.get('rdata'))
+        answer._rdata = rdata_cls[int(answer._type)].parse_dict(answer, data.get('rdata'))
         return answer
-
-    @classmethod
-    def sync_parse_dict(cls, message, data):
-        return asyncio.run(cls.parse_dict(message, data))
 
     @property
     def rdlength(self):
@@ -144,10 +140,10 @@ class AnswerStorage:
         self.storage.append(answer)
 
     @classmethod
-    async def parse_dict(cls, message, data):
+    def parse_dict(cls, message, data):
         instance = cls(message)
         for x in data:
-            instance.append(await Answer.parse_dict(message, x))
+            instance.append(Answer.parse_dict(message, x))
         return instance
 
     def __len__(self):

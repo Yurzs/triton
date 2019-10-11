@@ -20,7 +20,7 @@ class SOA(ResourceRecord):
     repr = ['mname', 'rname', 'serial', 'refresh', 'retry', 'expire', 'minimum']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.mname = Domain.decode(answer.message)
         instance.rname = Domain.decode(answer.message)
@@ -32,7 +32,7 @@ class SOA(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.mname = Domain(data.get('mname'), None)
         instance.rname = Domain(data.get('rname'), None)

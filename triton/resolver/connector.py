@@ -1,4 +1,5 @@
 from .resolver import Resolver
+from .local_cache import Cache
 
 
 class Connection:
@@ -7,3 +8,4 @@ class Connection:
         self.loop = loop
         self.server_connector = server_connector
         self.Resolver = Resolver(self)
+        self.Cache = Cache(self.loop)

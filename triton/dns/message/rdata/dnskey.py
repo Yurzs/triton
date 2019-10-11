@@ -27,7 +27,7 @@ class DNSKEY(ResourceRecord):
     repr = ['key_type', 'protocol', 'algorithm', 'public_key']
 
     @classmethod
-    async def parse_bytes(cls, answer: 'triton.dns.message.answer.Answer', read_len: int) -> 'DNSKEY':
+    def parse_bytes(cls, answer: 'triton.dns.message.answer.Answer', read_len: int) -> 'DNSKEY':
         assert isinstance(answer, triton.dns.message.answer.Answer)
         assert isinstance(read_len, int)
         instance = cls(answer)
@@ -39,7 +39,7 @@ class DNSKEY(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer: 'triton.dns.message.answer.Answer', data: dict) -> 'DNSKEY':
+    def parse_dict(cls, answer: 'triton.dns.message.answer.Answer', data: dict) -> 'DNSKEY':
         assert isinstance(answer, triton.dns.message.answer.Answer)
         assert isinstance(data, dict)
         instance = cls(answer)

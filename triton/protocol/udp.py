@@ -17,11 +17,7 @@ class UdpClient:
         self.transport.sendto(self.message.Binary.full)
 
     def datagram_received(self, data, addr):
-        task = asyncio.Task(self.to_async(data))
-
-    @asyncio.coroutine
-    def to_async(self, data):
-        message = yield from Message.parse_bytes(data)
+        message = Message.parse_bytes(data)
         self.on_con_lost.set_result(message)
 
     def error_received(self, exc):
@@ -41,14 +37,21 @@ class UdpClient:
             self.on_con_lost.exception()
 
     @classmethod
-    async def send_message(cls, message, host, port=53, timeout=5):
-        loop = triton.loop
+    async def send_message(cls, message, host, port=53, timeout=5, retries=5, loop=None):
+        loop = triton.loop if not loop else loop
         on_con_lost = loop.create_future()
         transport, protocol = await loop.create_datagram_endpoint(
             lambda: cls(loop, message, on_con_lost, timeout),
-            remote_addr=(host, port))
-        try:
-            message = await on_con_lost
-            return message
-        finally:
-            transport.close()
+            remote_addr=(str(host), port))
+        for _ in range(retries):
+            try:
+                message = await on_con_lost
+                return message
+            except triton.protocol.exception.TimeoutError:
+                continue
+            except ConnectionRefusedError as e :
+                print(e)
+                continue
+            finally:
+                transport.close()
+                return message

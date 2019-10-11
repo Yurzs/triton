@@ -19,7 +19,7 @@ class DS(ResourceRecord):
     repr = ['key_tag', 'algorithm', 'algorithm', 'digest_type', 'digest']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         """
         Parses wire-format bytes to DS instance
         :param answer: triton.dns.message.Answer
@@ -34,7 +34,7 @@ class DS(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         """
         Parses dict values to create this RR type
         :param answer: triton.dns.message.Answer

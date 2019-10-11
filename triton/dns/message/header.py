@@ -27,7 +27,7 @@ class Header:
         self.message = message
 
     @classmethod
-    async def parse_bytes(cls, message):
+    def parse_bytes(cls, message):
         header = cls(message)
         header._id = message.stream.read('uint:16')
         header._qr = message.stream.read('uint:1')
@@ -45,7 +45,7 @@ class Header:
         return header
 
     @classmethod
-    async def parse_dict(cls, message, data):
+    def parse_dict(cls, message, data):
         header = cls(message)
         header._id = data.get('id')
         header._qr = data.get('qr')

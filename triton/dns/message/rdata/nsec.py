@@ -98,7 +98,7 @@ class NSEC(ResourceRecord):
             'type_bitmaps_']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.next_domain_name = Domain.decode(answer.message)
         instance.type_bitmaps_ = BitMapWindowStorage()
@@ -112,9 +112,9 @@ class NSEC(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
-        instance.next_domain_name = Domain(data.get('next_domain_name'), None)
+        instance.next_domain_name = Domain(data.get('next_domain_name'))
         instance.type_bitmaps_ = BitMapWindowStorage.from_list(data.get('type_bitmaps'))
         return instance
 
@@ -159,7 +159,7 @@ class NSEC3(ResourceRecord):
             'type_bitmaps_']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance._hash_algorithm = answer.message.stream.read('uint:8')
         instance.flags = answer.message.stream.read('uint:8')
@@ -179,7 +179,7 @@ class NSEC3(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data: dict):
+    def parse_dict(cls, answer, data: dict):
         instance = cls(answer)
         instance._hash_algorithm = data.get('hash_algorithm')
         instance.flags = data.get('flags')
@@ -250,7 +250,7 @@ class NSEC3PARAM(ResourceRecord):
             'salt']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance._hash_algorithm = answer.message.stream.read('uint:8')
         instance.flags = answer.message.stream.read('uint:8')
@@ -260,7 +260,7 @@ class NSEC3PARAM(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance._hash_algorithm = data.get('hash_algorithm')
         instance.flags = data.get('flags')

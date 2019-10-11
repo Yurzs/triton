@@ -15,14 +15,14 @@ class MX(ResourceRecord):
     repr = ['preference', 'exchange']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.preference = answer.message.stream.read(f'uint:{2 * 8}')
         instance.exchange = Domain.decode(answer.message)
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.preference = data.get('preference')
         instance.exchange = Domain(data.get('exchange'), None)

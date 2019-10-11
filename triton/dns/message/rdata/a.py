@@ -14,13 +14,13 @@ class A(ResourceRecord):
     repr = ['address']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.address = IPv4Address(answer.message.stream.read(f'uint:{read_len * 8}'))
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.address = IPv4Address(data.get('address'))
         return instance

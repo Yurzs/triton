@@ -59,7 +59,7 @@ class RRSIG(ResourceRecord):
             'signature']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         start = answer.message.stream.pos
         instance._type_covered = answer.message.stream.read(f'uint:16')
@@ -75,7 +75,7 @@ class RRSIG(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_raw(cls, data):
+    def parse_raw(cls, data):
         instance = cls(None)
         stream = BitStream(bytes=data)
         instance._type_covered = stream.read(f'uint:16')
@@ -95,7 +95,7 @@ class RRSIG(ResourceRecord):
         return base64.b64encode(self._signature).decode()
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance._type_covered = data.get('type_covered')
         instance._algorithm = data.get('algorithm')
@@ -104,7 +104,7 @@ class RRSIG(ResourceRecord):
         instance._signature_expiration = data.get('signature_expiration')
         instance._signature_inception = data.get('signature_inception')
         instance.key_tag = data.get('key_tag')
-        instance.signers_name = Domain(data.get('signers_name'), None)
+        instance.signers_name = Domain(data.get('signers_name'))
         instance._signature = data.get('signature')
         return instance
 

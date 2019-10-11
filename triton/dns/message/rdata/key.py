@@ -21,7 +21,7 @@ class KEY(ResourceRecord):
     repr = ['flags', 'protocol', 'algorithm', 'public_key']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.flags = answer.message.stream.read(f'bin:16')
         instance._protocol = answer.message.stream.read(f'uint:8')
@@ -31,7 +31,7 @@ class KEY(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.flags = data.get('flags')
         instance._protocol = 3

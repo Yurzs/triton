@@ -81,7 +81,7 @@ class Cache:
         for rns, ips in root_nameservers.items():
             ns = self.add_domain(rns)
             for ip in ips:
-                ns.add_resource_record(triton.dns.message.Answer.sync_parse_dict(
+                ns.add_resource_record(triton.dns.message.Answer.parse_dict(
                     None, {'name': rns,
                            'ttl': int('1' * 32, 2),
                            'type': 1 if isinstance(ip, IPv4Address) else 28,
@@ -89,7 +89,7 @@ class Cache:
                            'rdata': {
                                'address': str(ip)
                            }}))
-            root.add_resource_record(triton.dns.message.Answer.sync_parse_dict(
+            root.add_resource_record(triton.dns.message.Answer.parse_dict(
                 None, {'name': '.',
                        'ttl': int('1' * 32, 2),
                        'type': 2,
@@ -126,11 +126,36 @@ class Cache:
     def __contains__(self, item):
         return True if [x for x in self.database if x.name == item] else False
 
+    def find(self, domain, type, cls):
+        domain_ = self.get(domain)
+        if domain_:
+            answers = domain_.all_rr_by_type(type)
+            if answers:
+                message = triton.dns.Message.create_question(domain, type)
+                for answer in answers:
+                    answer._ttl = answer.expire() if answer.expire() else 1
+                    message.answer.append(answer)
+                return message
+
+    def store(self, message):
+        for answer in message.answer:
+            domain = self.add_domain(answer.name.lower())
+            domain.add_resource_record(answer)
+        for answer in message.authority:
+            domain = self.add_domain(answer.name.lower())
+            domain.add_resource_record(answer)
+        for answer in message.additional:
+            if not isinstance(answer, triton.dns.message.rdata.OPT):
+                domain = self.add_domain(answer.name.lower())
+                domain.add_resource_record(answer)
+
     def find_or_store(self, f):
+        default = self
+
         async def wrapper(dns_server, domain, record_type, *args, **kwargs):
+            self = kwargs.get('custom_cache', default)
             domain_ = self.get(domain)
-            use_cache = kwargs.get('use_cache', True)
-            if domain_ and use_cache:
+            if domain_ and kwargs.get('use_cache', True):
                 answers = domain_.all_rr_by_type(record_type)
                 if answers:
                     message = await triton.dns.Message.create_question(domain, record_type)

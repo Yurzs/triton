@@ -37,7 +37,6 @@ class Algorithm:
             if len(set([x.name for x in rrset])) == 1:  # If all answers name match then sort rr by rdata
                 rrset = sorted(rrset, key=lambda x: x.rdata.Binary.full)
             return f(cls, key_rr, rrset, rrsig)
-
         return wrapper
 
     @classmethod
@@ -45,7 +44,7 @@ class Algorithm:
     @validate_signature_time
     @sort_rrset
     def verify_rrset(cls, key_rr, rrset, rrsig):
-        signer = cls.construct_signer(key_rr)
+        signer = cls.construct_signer(key_rr=key_rr)
         hash = cls.hasher.new()
         hash.update(BitArray(bin=rrsig.rdata.Binary.without_signature).bytes)
         for rr in rrset:

@@ -13,13 +13,13 @@ class CNAME(ResourceRecord):
     repr = ['cname']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.cname = Domain.decode(answer.message)
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.address = Domain(data.get('cname'), None)
         return instance

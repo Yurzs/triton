@@ -19,7 +19,7 @@ class Question:
         self.Binary = self._Binary(self)
 
     @classmethod
-    async def parse_bytes(cls, message):
+    def parse_bytes(cls, message):
         question = cls(message)
         question.qname = Domain.decode(message)
         question.qtype = message.stream.read('uint:16')
@@ -27,7 +27,7 @@ class Question:
         return question
 
     @classmethod
-    async def parse_dict(cls, message, dct):
+    def parse_dict(cls, message, dct):
         question = cls(message)
         question.qname = Domain(dct.get('qname'), None)
         question.qtype = dct.get('qtype')
@@ -82,10 +82,10 @@ class QuestionStorage:
         self.storage.append(question)
 
     @classmethod
-    async def parse_dict(cls, message, data):
+    def parse_dict(cls, message, data):
         instance = cls(message)
         for x in data:
-            instance.append(await Question.parse_dict(message, x))
+            instance.append(Question.parse_dict(message, x))
         return instance
 
     def __len__(self):

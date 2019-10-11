@@ -6,17 +6,13 @@ cache = Cache(loop)
 from . import resolver
 from . import dns
 from . import protocol
-
-
-
-
-
 from . import resolver
-from .query import query, sync_query
+from .query import Query
 
 
 async def full_chain(domain, record_type=1, dnssec=False):
-    return await resolver.find(domain, record_type, dnssec)
+    rs = resolver.ChainResolver(domain, record_type)
+    return await rs.go()
 
 
 def sync_full_chain(domain, record_type=1, dnssec=False):

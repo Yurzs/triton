@@ -16,7 +16,7 @@ class OPT(ResourceRecord):
         self.storage = OptionStorage()
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
 
         while read_len > 0:
@@ -28,7 +28,7 @@ class OPT(ResourceRecord):
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         for opt in data.get('options', []):
             instance.storage.append(Option(**opt))

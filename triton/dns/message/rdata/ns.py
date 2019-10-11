@@ -13,13 +13,13 @@ class NS(ResourceRecord):
     repr = ['nsdname']
 
     @classmethod
-    async def parse_bytes(cls, answer, read_len):
+    def parse_bytes(cls, answer, read_len):
         instance = cls(answer)
         instance.nsdname = Domain.decode(answer.message)
         return instance
 
     @classmethod
-    async def parse_dict(cls, answer, data):
+    def parse_dict(cls, answer, data):
         instance = cls(answer)
         instance.nsdname = Domain(data.get('label', data.get('nsdname')), None)
         return instance

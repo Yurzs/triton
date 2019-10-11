@@ -46,46 +46,46 @@ class Message:
         self.Binary = self._Binary(self)
 
     @classmethod
-    async def parse_bytes(cls, raw_bytes):
+    def parse_bytes(cls, raw_bytes):
         message = cls()
         message.stream = ConstBitStream(raw_bytes)
-        message.header = await Header.parse_bytes(message)
+        message.header = Header.parse_bytes(message)
         for _ in range(message.header._qdcount):
-            message.question.append(await Question.parse_bytes(message))
+            message.question.append(Question.parse_bytes(message))
         for _ in range(message.header._ancount):
-            message.answer.append(await Answer.parse_bytes(message))
+            message.answer.append(Answer.parse_bytes(message))
         for _ in range(message.header._nscount):
-            message.authority.append(await Answer.parse_bytes(message))
+            message.authority.append(Answer.parse_bytes(message))
         for _ in range(message.header._arcount):
-            message.additional.append(await Answer.parse_bytes(message))
+            message.additional.append(Answer.parse_bytes(message))
         message.domains.purge()
         return message
 
-    async def add_dict(self, data: dict) -> None:
+    def add_dict(self, data: dict) -> None:
         for answ in data.get('answer', []):
-            await self.add_dict_answer(answ)
+            self.add_dict_answer(answ)
         for auth in data.get('authority', []):
-            await self.add_dict_authority(auth)
+            self.add_dict_authority(auth)
         for addi in data.get('additional', []):
-            await self.add_dict_additional(addi)
+            self.add_dict_additional(addi)
 
-    async def add_dict_answer(self, data):
-        self.answer.append(await Answer.parse_dict(self, data))
+    def add_dict_answer(self, data):
+        self.answer.append(Answer.parse_dict(self, data))
 
-    async def add_dict_authority(self, data):
-        self.authority.append(await Answer.parse_dict(self, data))
+    def add_dict_authority(self, data):
+        self.authority.append(Answer.parse_dict(self, data))
 
-    async def add_dict_additional(self, data):
-        self.additional.append(await Answer.parse_dict(self, data))
+    def add_dict_additional(self, data):
+        self.additional.append(Answer.parse_dict(self, data))
 
     @classmethod
-    async def parse_dict(cls, data):
+    def parse_dict(cls, data):
         message = cls()
-        message.header = await Header.parse_dict(message, data['header'])
-        message.question = await QuestionStorage.parse_dict(message, data['question'])
-        message.answer = await AnswerStorage.parse_dict(message, data['answer'])
-        message.authority = await AnswerStorage.parse_dict(message, data['authority'])
-        message.additional = await AnswerStorage.parse_dict(message, data['additional'])
+        message.header = Header.parse_dict(message, data['header'])
+        message.question = QuestionStorage.parse_dict(message, data['question'])
+        message.answer = AnswerStorage.parse_dict(message, data['answer'])
+        message.authority = AnswerStorage.parse_dict(message, data['authority'])
+        message.additional = AnswerStorage.parse_dict(message, data['additional'])
         message.domains.purge()
         return message
 
@@ -127,8 +127,8 @@ class Message:
         self.additional.append(Answer.from_json(self, data))
 
     @classmethod
-    async def create_question(cls, name, qtype=1, qclass=1, dnssec=False):
-        m = await Message.parse_dict(
+    def create_question(cls, name, qtype=1, qclass=1, dnssec=False):
+        m = Message.parse_dict(
             {
                 'header': {
                     'id': random.randrange(1, 65535),
@@ -158,7 +158,7 @@ class Message:
                     {
                         'name': '',
                         'type': 41,
-                        'class': 16000,
+                        'class': 4096,
                         'ttl': int('00000000000000001000000000000000', base=2),
                         'rdata': {
                             'options': []

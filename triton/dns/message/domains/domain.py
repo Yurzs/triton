@@ -2,10 +2,15 @@ import bitstring
 
 
 class Domain:
-    def __init__(self, label, pos):
+    class _Binary:
+        def __init__(self, domain):
+            self.domain = domain
+
+    def __init__(self, label, pos=None):
         self.injected = False
         self.label = label.replace('"', '').replace("'", '')
         self.pos = pos
+        self.Binary = Domain._Binary(self)
 
     @classmethod
     def decode(cls, message):
@@ -91,6 +96,19 @@ class Domain:
         self.pos = message.offset
         # message.domains.append(self)
         return binstring
+
+    @property
+    def binary_raw(self):
+        if self.label == '' or self.label == '.':
+            return str('').zfill(8)
+        binary_string = ''
+        parts = self.label.split('.')
+        for domain_part in parts:
+            binary_string += str(bin(len(domain_part))[2:]).zfill(8)
+            for char in domain_part:
+                binary_string += str(bin(ord(char))[2:]).zfill(8)
+        binary_string += str(bin(0)[2:]).zfill(8)
+        return binary_string
 
     @property
     def __dict__(self):
