@@ -79,8 +79,9 @@ class Query:
                                                                   timeout=self.timeout,
                                                                   retries=self.retries,
                                                                   loop=self.loop)
-            self.cache.store(result)
-            return result
+            if result:
+                self.cache.store(result)
+                return result
         else:
             return await triton.protocol.UdpClient.send_message(message=question_message,
                                                                 host=self.nameserver,

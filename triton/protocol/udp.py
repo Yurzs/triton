@@ -50,8 +50,6 @@ class UdpClient:
             except triton.protocol.exception.TimeoutError:
                 continue
             except ConnectionRefusedError as e :
-                print(e)
-                continue
+                break
             finally:
                 transport.close()
-                return message
