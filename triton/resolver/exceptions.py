@@ -12,3 +12,7 @@ class BadDomainName(GenericResolverException):
 
 class DomainNotFound(GenericResolverException):
     pass
+
+
+class CannotConnectToNameserver(GenericResolverException):
+    pass

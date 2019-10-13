@@ -12,5 +12,6 @@ from .opt import OPT
 from .rrsig import RRSIG
 from .soa import SOA
 from .txt import TXT
+from .pointer import PTR
 
 rdata_cls = {rr.id: rr for rr in ResourceRecord.__subclasses__()}

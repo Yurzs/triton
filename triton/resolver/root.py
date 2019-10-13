@@ -57,6 +57,8 @@ class ChainResolver:
                             continue
                         except TimeoutError:
                             continue
+                        except exceptions.CannotConnectToNameserver:
+                            continue
                 except exceptions.DomainNotFound:
                     await self.update_nameservers(ns.rdata.nsdname.label.lower())
             else:
@@ -116,6 +118,8 @@ class ChainResolver:
                                                                      loop=self.loop)
 
                     except OSError:
+                        continue
+                    except exceptions.CannotConnectToNameserver:
                         continue
             except exceptions.DomainNotFound:
                 print(f'not found {ns.rdata.nsdname.label.lower()} in cache')

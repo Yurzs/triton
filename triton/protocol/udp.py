@@ -10,7 +10,7 @@ class UdpClient:
         self.message = message
         self.transport = None
         self.on_con_lost = on_con_lost
-        loop.create_task(self.timeout_task(timeout))
+        self.task = loop.create_task(self.timeout_task(timeout))
 
     def connection_made(self, transport):
         self.transport = transport
@@ -40,16 +40,20 @@ class UdpClient:
     async def send_message(cls, message, host, port=53, timeout=5, retries=5, loop=None):
         loop = triton.loop if not loop else loop
         on_con_lost = loop.create_future()
-        transport, protocol = await loop.create_datagram_endpoint(
-            lambda: cls(loop, message, on_con_lost, timeout),
-            remote_addr=(str(host), port))
-        for _ in range(retries):
-            try:
-                message = await on_con_lost
-                return message
-            except triton.protocol.exception.TimeoutError:
-                continue
-            except ConnectionRefusedError as e :
-                break
-            finally:
-                transport.close()
+        try:
+            transport, protocol = await loop.create_datagram_endpoint(
+                lambda: cls(loop, message, on_con_lost, timeout),
+                remote_addr=(str(host), port))
+            for _ in range(retries):
+                try:
+                    message = await on_con_lost
+                    return message
+                except triton.protocol.exception.TimeoutError:
+                    continue
+                except ConnectionRefusedError:
+                    protocol.task.cancel()
+                    raise triton.resolver.exceptions.CannotConnectToNameserver()
+                finally:
+                    transport.close()
+        except ConnectionRefusedError:
+            pass
