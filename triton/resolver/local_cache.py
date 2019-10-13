@@ -2,7 +2,7 @@ from ipaddress import IPv4Address, IPv6Address, AddressValueError
 import asyncio
 import datetime
 import triton
-
+from . import exceptions
 
 root_nameservers = {
         'a.root-servers.net': [IPv4Address('198.41.0.4'), IPv6Address('2001:503:ba3e::2:30')],
@@ -54,6 +54,15 @@ class Domain:
     def nameservers(self):
         return self.all_rr_by_type(2)
 
+    @property
+    def redirects(self):
+        return True if self.all_rr_by_type(5) else False
+
+    @property
+    def redirect(self):
+        for rr in self.all_rr_by_type(5):
+            return rr.rdata.cname
+
     def __repr__(self):
         return self.name
 
@@ -101,10 +110,10 @@ class Cache:
     def get(self, name):
         if name == '':
             name = '.'
-        for ns in self.database:
-            if ns.name == name:
-                return ns
-        return None
+        for domain in self.database:
+            if domain.name == name:
+                return domain
+        raise exceptions.DomainNotFound()
 
     def remove_domain(self, instance):
         for n, ns in enumerate(self.database.copy()):
@@ -112,30 +121,32 @@ class Cache:
                 self.database.pop(n)
 
     def add_domain(self, name):
-        ns = Domain(self, name)
-        if len([n for n in self.database if n.name == name]):
+        domain = Domain(self, name)
+        if domain in self:
             return self.get(name)
         else:
-            self.database.append(ns)
-        return ns
+            self.database.append(domain)
+            return domain
 
     @property
     def root_servers(self):
         return list(root_nameservers.keys())
 
     def __contains__(self, item):
-        return True if [x for x in self.database if x.name == item] else False
+        return item.name in [x.name for x in self.database]
 
     def find(self, domain, type, cls):
-        domain_ = self.get(domain)
-        if domain_:
+        try:
+            domain_ = self.get(domain)
             answers = domain_.all_rr_by_type(type)
             if answers:
-                message = triton.dns.Message.create_question(domain, type)
+                message = triton.dns.Message.create_question(domain, type, cls)
                 for answer in answers:
                     answer._ttl = answer.expire() if answer.expire() else 1
                     message.answer.append(answer)
                 return message
+        except exceptions.DomainNotFound:
+            return
 
     def store(self, message):
         for answer in message.answer:
@@ -145,7 +156,7 @@ class Cache:
             domain = self.add_domain(answer.name.lower())
             domain.add_resource_record(answer)
         for answer in message.additional:
-            if not isinstance(answer, triton.dns.message.rdata.OPT):
+            if not isinstance(answer.rdata, triton.dns.message.rdata.OPT):
                 domain = self.add_domain(answer.name.lower())
                 domain.add_resource_record(answer)
 

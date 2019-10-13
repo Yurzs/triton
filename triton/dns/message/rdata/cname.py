@@ -21,7 +21,7 @@ class CNAME(ResourceRecord):
     @classmethod
     def parse_dict(cls, answer, data):
         instance = cls(answer)
-        instance.address = Domain(data.get('cname'), None)
+        instance.cname = Domain(data.get('cname'), None)
         return instance
 
     @property

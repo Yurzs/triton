@@ -80,7 +80,7 @@ class Answer:
 
     @property
     def cls(self):
-        return self.cls
+        return self._cls
 
     @property
     def ttl(self):
@@ -135,9 +135,12 @@ class AnswerStorage:
         self.Binary = self._Binary(self)
 
     def append(self, answer: Answer):
-        assert isinstance(answer, Answer), f'What the heck is that {self.__class__.__name__.lower()}?'
-        answer.message = self.message
-        self.storage.append(answer)
+        assert isinstance(answer, Answer), f'What is that {self.__class__.__name__.lower()}?'
+        if answer not in self:
+            answer.message = self.message
+            self.storage.append(answer)
+
+
 
     @classmethod
     def parse_dict(cls, message, data):
@@ -171,10 +174,7 @@ class AnswerStorage:
         return '[' + ','.join([a.__repr__() for a in self.storage]) + ']'
 
     def __contains__(self, item):
-        for x in self.storage:
-            if isinstance(x.rdata, item):
-                return True
-        return False
+        return item.__repr__() in [x.__repr__() for x in self.storage]
 
     def by_type(self, *item):
         result = []
