@@ -122,8 +122,9 @@ class NSEC(ResourceRecord):
     def type_bitmaps(self):
         return self.type_bitmaps_.__dict__
 
+    @property
     def __dict__(self):
-        return {'next_domain_name': self.next_domain.name.label,
+        return {'next_domain_name': self.next_domain_name.label,
                 'type_bitmaps_': self.type_bitmaps}
 
     @classmethod
