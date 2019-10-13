@@ -4,6 +4,8 @@ stages:
 
 tests:
   stage: unittests
+  tags:
+    - alpine
   script:
     - apk update
     - apk add --update --no-cache --virtual .build-deps alpine-sdk python3-dev musl-dev postgresql-dev libffi-dev
@@ -13,6 +15,8 @@ tests:
 
 pypi_build:
   stage: build
+  tags:
+    - alpine
   script:
     - apk update
     - apk add --update --no-cache --virtual .build-deps alpine-sdk python3-dev musl-dev postgresql-dev libffi-dev
