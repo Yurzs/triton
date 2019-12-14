@@ -1,0 +1,14 @@
+dns:
+  host: 127.0.0.1
+  port: 53
+  recursive: false
+
+database:
+  username: admin
+  password: admin
+  host: 127.0.0.1
+  port: 27017
+  database: triton
+  replica_set:
+    - 127.0.0.1:27017
+    - 127.0.0.2:27017

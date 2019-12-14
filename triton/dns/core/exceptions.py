@@ -1,0 +1,2 @@
+class DnsException(BaseException):
+    pass
