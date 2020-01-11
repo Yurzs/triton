@@ -32,7 +32,6 @@ class Resolver:
         """Resolves recursively from root to target."""
 
         for server in self.nameservers.copy():
-            print(self.label, server.ip4)
             reply = await resolve(self.loop, server.ip4, self.label, self.type, self.klass)
             if not reply:
                 continue

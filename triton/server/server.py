@@ -101,6 +101,7 @@ class Server:
             message.answer.append(
                 parts.DnsMessageAnswer(
                     message, rr["label"], rr["type"], rr["class"], rr["ttl"],
-                rdata(**rr["rdata"])))
+                rdata(**rr["rdata"]))
+            )
 
         return message
