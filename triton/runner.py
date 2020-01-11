@@ -11,6 +11,5 @@ parser.add_argument("--log", help="level of logging", type=str, choices=["DEBUG"
 
 args = parser.parse_args()
 
-
-server = Server(args.config, host="0.0.0.0", loop=global_loop, )
+server = Server(args.config, host="0.0.0.0", loop=global_loop)
 server.start()
