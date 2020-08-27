@@ -9,103 +9,12 @@ Triton is a simple DNS client made for better understanding of DNS protocol
 ## From this repo
 
 ```bash
-git clone https://git.best-service.online/yurzs/triton.git  
+git clone https://github.com/Yurzs/triton
 cd triton 
 python3 setup.py install
 ```
 
 ## How to use
-
-Here is an example query for A record of this gitlab instance
-```python3
->>> import triton
->>> a = triton.sync_query('8.8.8.8', 'google.com')
->>> print(a.to_json())
-{
-    "header": {
-        "id": 37920,
-        "qr": 1,
-        "opcode": 0,
-        "aa": 0,
-        "tc": 0,
-        "rd": 1,
-        "ra": 1,
-        "z": 0,
-        "rcode": 0,
-        "qdcount": 1,
-        "ancount": 6,
-        "nscount": 0,
-        "arcount": 0
-    },
-    "question": [
-        {
-            "name": "google.com",
-            "type": 1,
-            "class": 1
-        }
-    ],
-    "answer": [
-        {
-            "name": "google.com",
-            "type": "A",
-            "class": 1,
-            "ttl": 257,
-            "rdata": {
-                "address": "64.233.165.113"
-            }
-        },
-        {
-            "name": "google.com",
-            "type": "A",
-            "class": 1,
-            "ttl": 257,
-            "rdata": {
-                "address": "64.233.165.102"
-            }
-        },
-        {
-            "name": "google.com",
-            "type": "A",
-            "class": 1,
-            "ttl": 257,
-            "rdata": {
-                "address": "64.233.165.101"
-            }
-        },
-        {
-            "name": "google.com",
-            "type": "A",
-            "class": 1,
-            "ttl": 257,
-            "rdata": {
-                "address": "64.233.165.139"
-            }
-        },
-        {
-            "name": "google.com",
-            "type": "A",
-            "class": 1,
-            "ttl": 257,
-            "rdata": {
-                "address": "64.233.165.100"
-            }
-        },
-        {
-            "name": "google.com",
-            "type": "A",
-            "class": 1,
-            "ttl": 257,
-            "rdata": {
-                "address": "64.233.165.138"
-            }
-        }
-    ],
-    "authority": [],
-    "additional": []
-}
-``` 
-For demonstration purposes sync function is used.  
-Call ```triton.query``` for async version
 
 ## Tree resolve
 Also there is experimental full DNS tree resolve function
