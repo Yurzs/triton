@@ -69,7 +69,7 @@ print(reply_message.__dict__)
     description='Async DNS client',  # Give a short description about your library
     author='Yury (Yurzs)',  # Type in your name
     author_email='dev@best-service.online',  # Type in your E-Mail
-    url='https://git.best-service.online/yurzs/triton',  # Provide either the link to your github or to your website
+    url='https://github.com/Yurzs/triton',  # Provide either the link to your github or to your website
     keywords=['triton', 'DNS', 'client'],  # Keywords that define your package best
     install_requires=['bitstring'],
     classifiers=[
